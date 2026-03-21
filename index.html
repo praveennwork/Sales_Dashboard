@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.5,user-scalable=yes"/>
+<title>G-plast Sales Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0;
+   padding: 0;
+    box-sizing: border-box; 
+  }
+:root {
+  --bg: #f8fafc; 
+  --bg2: #ffffff; 
+  --bg3: #f1f5f9; 
+  --border: #e2e8f0; 
+  --border-hover: #cbd5e1;
+  --text: #0f172a; 
+  --muted: #64748b; 
+  --accent: #3b82f6; 
+  --accent-hover: #2563eb;
+  --imd: #3b82f6;
+  --dcd: #f59e0b;
+  --trd: #8b5cf6;
+  --med: #10b981;
+  --export: #06b6d4;
+  --domestic: #ef4444;
+  --general: #f97316;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+body { 
+  background: var(--bg); 
+  color: var(--text); 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+  min-height: 100vh; 
+  overflow-x: hidden; 
+  width: 100%; 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
+
+/* Loading Animation */
+#loader { 
+  position: fixed; 
+  inset: 0; 
+  background: var(--bg); 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 16px; 
+  z-index: 999; 
+  transition: opacity 0.4s; 
+}
+#loader.hide { opacity: 0; pointer-events: none; }
+.spinner { 
+  width: 40px; 
+  height: 40px; 
+  border: 3px solid var(--border); 
+  border-top-color: var(--accent); 
+  border-radius: 50%; 
+  animation: spin 0.8s linear infinite; 
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loader p { color: var(--muted); font-size: 14px; font-weight: 500; }
+
+/* Error Handling UI */
+#error { 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  background: var(--bg); 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px; 
+  padding: 20px; 
+  text-align: center; 
+}
+#error.show { display: flex; }
+#error h2 { color: #dc2626; font-family: 'Inter', sans-serif; font-size: clamp(18px,5vw,24px); font-weight: 600; }
+#error p { color: var(--muted); font-size: clamp(13px,3.5vw,15px); max-width: 90%; line-height: 1.6; }
+#error code { background: var(--bg3); padding: 4px 10px; border-radius: 6px; font-size: 13px; color: var(--accent); display: inline-block; font-family: 'Courier New', monospace; }
+
+/* Header & Controls */
+header { 
+  background: var(--bg2); 
+  border-bottom: 1px solid var(--border); 
+  padding: 16px 20px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+  box-shadow: var(--shadow-sm); 
+  position: sticky; 
+  top: 0; 
+  z-index: 100; 
+  width: 100%; 
+}
+header h1 { 
+  font-size: clamp(20px,4vw,24px); 
+  font-weight: 700; 
+  color: var(--text); 
+  letter-spacing: -0.02em;
+}
+header h1 span { 
+  color: var(--accent); 
+  font-weight: 600;
+}
+#meta { 
+  font-size: clamp(11px,2.5vw,13px); 
+  color: var(--muted); 
+  margin-top: 4px; 
+  font-weight: 500;
+}
+#refresh-info { 
+  font-size: clamp(11px,2.5vw,13px); 
+  color: var(--muted); 
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 500;
+}
+#refresh-info b { color: var(--accent); font-weight: 600; }
+
+.btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(12px,2.5vw,13px);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn:active {
+  transform: translateY(0);
+}
+.btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.btn-success {
+  background: #10b981;
+}
+.btn-success:hover {
+  background: #059669;
+}
+
+/* Export Buttons Container */
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* KPI Grid */
+.kpi-row { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+  gap: 12px; 
+  padding: 20px; 
+  width: 100%; 
+}
+
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 14px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+  transition: left 0.5s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+
+.kpi:hover::before {
+  left: 100%;
+}
+
+.kpi .label { 
+  font-size: clamp(10px,2.2vw,12px); 
+  color: var(--muted); 
+  text-transform: uppercase; 
+  letter-spacing: 0.05em; 
+  margin-bottom: 6px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  position: relative; 
+  z-index: 2;
+  font-weight: 600;
+}
+
+.kpi .val { 
+  font-size: clamp(16px,3.5vw,22px); 
+  font-weight: 700; 
+  line-height: 1.2; 
+  word-break: break-word;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  position: relative; 
+  z-index: 2;
+  letter-spacing: -0.02em;
+}
+
+.kpi .sub { 
+  font-size: clamp(10px,2.2vw,12px); 
+  color: var(--muted); 
+  margin-top: 6px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  position: relative; 
+  z-index: 2;
+  font-weight: 500;
+}
+
+/* Navigation Tabs */
+.tabs { 
+  display: flex; 
+  gap: 4px; 
+  padding: 0 20px; 
+  border-bottom: 1px solid var(--border); 
+  background: var(--bg2); 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
+  scrollbar-width: thin; 
+  width: 100%; 
+}
+.tab { 
+  font-family: 'Inter', sans-serif; 
+  font-size: clamp(12px,3vw,14px); 
+  font-weight: 600; 
+  padding: 12px 16px; 
+  background: none; 
+  border: none; 
+  color: var(--muted); 
+  cursor: pointer; 
+  border-bottom: 2px solid transparent; 
+  transition: all 0.2s; 
+  white-space: nowrap; 
+  flex-shrink: 0; 
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+#content { padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* Filters Bar */
+.filters { 
+  display: flex; 
+  gap: 12px; 
+  margin-bottom: 20px; 
+  flex-wrap: wrap; 
+  align-items: flex-end; 
+  background: var(--bg2); 
+  padding: 16px; 
+  border-radius: 12px; 
+  border: 1px solid var(--border); 
+  width: 100%; 
+  box-shadow: var(--shadow-sm);
+}
+.filters > div { flex: 1 1 150px; min-width: 130px; }
+.filters label { 
+  font-size: clamp(10px,2.2vw,12px); 
+  color: var(--muted); 
+  display: block; 
+  margin-bottom: 6px; 
+  text-transform: uppercase; 
+  letter-spacing: 0.04em; 
+  font-weight: 600; 
+}
+.filters select { 
+  background: var(--bg3); 
+  border: 1px solid var(--border); 
+  color: var(--text); 
+  padding: 10px 12px; 
+  border-radius: 8px; 
+  font-family: 'Inter', sans-serif; 
+  font-size: clamp(13px,2.8vw,14px); 
+  cursor: pointer; 
+  outline: none; 
+  width: 100%; 
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.filters select:hover { border-color: var(--border-hover); }
+.filters select:focus { 
+  border-color: var(--accent); 
+  background: var(--bg2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+#day-count { 
+  font-size: clamp(11px,2.5vw,13px); 
+  color: var(--muted); 
+  align-self: center; 
+  background: var(--bg3); 
+  padding: 8px 14px; 
+  border-radius: 8px; 
+  white-space: nowrap; 
+  font-weight: 500;
+}
+
+/* Dashboard Cards */
+.card { 
+  background: var(--bg2); 
+  border: 1px solid var(--border); 
+  border-radius: 12px; 
+  padding: 18px; 
+  margin-bottom: 20px; 
+  box-shadow: var(--shadow-sm); 
+  width: 100%; 
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: var(--shadow); }
+.card h3 { 
+  font-size: clamp(14px,3.2vw,16px); 
+  font-weight: 600; 
+  margin-bottom: 4px; 
+  color: var(--text); 
+  letter-spacing: -0.01em;
+}
+.card p { 
+  font-size: clamp(12px,2.5vw,13px); 
+  color: var(--muted); 
+  margin-bottom: 16px; 
+  font-weight: 500;
+}
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+
+.canvas-container { 
+  position: relative; 
+  width: 100%; 
+  min-height: 200px; 
+  height: auto; 
+  margin: 0 auto; 
+  background: var(--bg); 
+  border-radius: 10px; 
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+.canvas-container.medium { min-height: 150px; }
+canvas { display: block; width: 100% !important; height: auto !important; }
+
+@media (max-width: 900px) {
+  .two-col { grid-template-columns: 1fr; gap: 16px; }
+  .kpi-row { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; padding: 16px; }
+  header { padding: 14px 16px; }
+  #content { padding: 16px; }
+  .tabs { padding: 0 16px; }
+  .filters { padding: 14px; gap: 10px; }
+  .filters > div { flex: 1 1 130px; min-width: 110px; }
+  .canvas-container { min-height: 180px; }
+  .canvas-container.medium { min-height: 140px; }
+  .export-buttons { flex-direction: column; }
+  .export-buttons .btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 600px) {
+  header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  #refresh-info { text-align: left; width: 100%; }
+  .kpi-row { padding: 12px; gap: 8px; grid-template-columns: repeat(2, 1fr); }
+  .kpi { padding: 12px 10px; border-radius: 10px; }
+  .kpi .val { font-size: 16px; }
+  .tabs { padding: 0 12px; }
+  .tab { padding: 10px 12px; font-size: 12px; }
+  #content { padding: 12px; }
+  .filters { padding: 12px; gap: 8px; flex-direction: column; align-items: stretch; }
+  .filters > div { width: 100%; min-width: 100%; }
+  #day-count { width: 100%; text-align: center; white-space: normal; }
+  .card { padding: 14px 12px; border-radius: 10px; }
+  .two-col { gap: 12px; }
+  .canvas-container { min-height: 160px; }
+  .canvas-container.medium { min-height: 120px; }
+}
+
+@media (max-width: 380px) {
+  .kpi-row { gap: 6px; padding: 10px; }
+  .kpi { padding: 10px 8px; }
+  .kpi .val { font-size: 14px; }
+  .tab { padding: 8px 10px; font-size: 11px; }
+}
+
+@media (min-width: 1400px) {
+  #content { padding: 28px 40px; }
+  .kpi-row { padding: 24px 40px; }
+  .kpi .val { font-size: 24px; }
+  .kpi .label { font-size: 13px; }
+  .canvas-container { min-height: 240px; padding: 16px;}
+  .canvas-container.medium { min-height: 170px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <p>Loading dashboard…</p>
+</div>
+
+<div id="error">
+  <h2>Could not load data file</h2>
+  <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file and you are opening via Live Server — not by double-clicking.</p>
+</div>
+
+<div id="app" style="display:none;">
+  <header>
+    <div>
+      <h1>Sales <span>Dashboard</span></h1>
+      <div id="meta"></div>
+    </div>
+    <div id="refresh-info">
+      <span>Last updated: <b id="last-updated">—</b></span>
+      <button class="btn" onclick="manualRefresh()">
+        <svg viewBox="0 0 24 24" width="14" height="14">
+          <path d="M17.65 6.35A8 8 0 1 0 19 12h-2a6 6 0 1 1-2.23-4.69l2.64-2.64 1.42 1.42-3.54 3.54-3.54-3.54 1.41-1.41L16.44 5.3c.38.32.74.68 1.06 1.06z"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="monthly">All Units Monthly Overview</button>
+    <button class="tab" data-tab="daily">Day-wise</button>
+  </div>
+
+  <div id="content">
+    <div id="tab-monthly">
+      <div class="export-buttons">
+        <button class="btn btn-success" onclick="exportToExcel('monthly')">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          Export Monthly to Excel
+        </button>
+      </div>
+      
+      <div class="card">
+        <h3>Combined All Units Monthly Sales</h3>
+        <p>Total per month across all Units</p>
+        <div class="canvas-container">
+          <canvas id="chart-monthly-total"></canvas>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h3>Stacked by Units</h3>
+          <p>IMD · DCD · TRD · MED contribution per month</p>
+          <div class="canvas-container">
+            <canvas id="chart-monthly-stack"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Department Share</h3>
+          <p>Proportion of total across all months</p>
+          <div class="canvas-container">
+            <canvas id="chart-pie"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-daily" style="display:none;">
+      <div class="export-buttons">
+        <button class="btn btn-success" onclick="exportToExcel('daily')">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          Export Daily to Excel
+        </button>
+      </div>
+      
+      <div class="filters">
+        <div><label>Month</label><select id="f-month"><option value="all">All Months</option></select></div>
+        <div><label>Units</label><select id="f-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
+        <div><label>Territory</label><select id="f-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <span id="day-count"></span>
+      </div>
+      <div class="card">
+        <h3>Day-wise Sales</h3>
+        <p>All calendar days shown · days with no sales shown as ₹ 0</p>
+        <div class="canvas-container medium">
+          <canvas id="chart-daily"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* Global Config */
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DEPTS  = ['IMD','DCD','TRD','MED'];
+const DEPT_COLORS = { IMD: '#3b82f6', DCD: '#f59e0b', TRD: '#8b5cf6', MED: '#10b981' };
+const TER_COLORS  = { EXPORT: '#06b6d4', DOMESTIC: '#ef4444', GENERAL: '#f97316' };
+
+const GRID = '#e5e7eb'; 
+const AXIS_TEXT = '#475569';
+const TEXT = '#0f172a';
+
+/* Chart UI Defaults */
+
+const tooltipCfg = {
+  backgroundColor: '#ffffff', 
+  borderColor: '#e2e8f0', 
+  borderWidth: 1,
+  titleColor: '#000000', 
+  bodyColor: '#000000',
+  titleFont: { family: 'Inter', weight: 'bold', style: 'normal', size: 14 },
+  bodyFont: { family: 'Inter', weight: 'bold', style: 'normal', size: 13 }, 
+  padding: 12, 
+  cornerRadius: 10,
+  displayColors: true,
+  boxWidth: 8,
+  boxHeight: 8,
+  boxPadding: 6,
+  callbacks: { label: (ctx) => ' ' + fmt(round2(ctx.parsed.y ?? ctx.parsed)) }
+};
+
+const axisCfg = { 
+  color: AXIS_TEXT, 
+  font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' } 
+};
+
+const scaleCfg = () => ({
+  x: { 
+    grid: { color: GRID, lineWidth: 1 }, 
+    ticks: axisCfg, 
+    border: { display: false } 
+  },
+  y: { 
+    grid: { color: GRID, lineWidth: 1 }, 
+    ticks: { ...axisCfg, callback: v => fmt(v) }, 
+    border: { display: false }
+  }
+});
+
+const charts = {};
+const mkChart = (id, type, data, opts) => { 
+  if (charts[id]) charts[id].destroy(); 
+  charts[id] = new Chart(document.getElementById(id), { type, data, options: opts }); 
+};
+
+/* Data Formatting Utilities */
+
+const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
+const fmt = (v) => { 
+  v = round2(v); 
+  if (v >= 1e7) return  (v/1e7).toFixed(2) + ' Cr'; 
+  if (v >= 1e5) return (v/1e5).toFixed(2) + ' L'; 
+  return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
+};
+
+/* Excel Key Matching */
+
+const getCol = (row, ...names) => { 
+  for (const k of Object.keys(row)) { 
+    const kl = k.toLowerCase().trim(); 
+    for (const n of names) { if (kl === n.toLowerCase()) return row[k]; } 
+  } 
+  return ''; 
+};
+
+const parseDate = (v) => { 
+  if (v instanceof Date) return isNaN(v) ? null : v; 
+  if (typeof v === 'number') { 
+    try { const d = XLSX.SSF.parse_date_code(v); return d ? new Date(d.y, d.m-1, d.d) : null; } catch(e) { return null; } 
+  } 
+  if (typeof v === 'string' && v.trim()) { 
+    const p = v.trim().split('.'); 
+    if (p.length === 3) { const d = new Date(+p[2], +p[1]-1, +p[0]); if (!isNaN(d)) return d; } 
+    const fb = new Date(v); if (!isNaN(fb)) return fb; 
+  } 
+  return null; 
+};
+
+const normTerritory = (v) => { 
+  const s = String(v).toUpperCase().trim(); 
+  if (s === 'EXPORT' || s === 'EXP') return 'EXPORT'; 
+  if (s === 'DOMESTIC' || s === 'DOM') return 'DOMESTIC'; 
+  if (s === 'GENERAL' || s === 'GEN') return 'GENERAL'; 
+  return s; 
+};
+
+const monthKey = (d) => MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+
+let allRows = [];
+let totalExcelRows = 0;
+let currentMonthlyChartData = null;
+let currentDailyChartData = null;
+
+/* Main Parser */
+const parseExcel = (buf) => { 
+  const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true }); 
+  const ws = wb.Sheets[wb.SheetNames[0]]; 
+  const json = XLSX.utils.sheet_to_json(ws, { defval: '', blankrows: false });
+  totalExcelRows = json.length;
+  
+  return json.map(row => {
+    const amountKeys = Object.keys(row).filter(key => 
+      key.toLowerCase().trim() === 'total amt' || 
+      key.toLowerCase().trim() === 'totalamt'
+    );
+    
+    let amount = 0;
+    if (amountKeys.length > 0) {
+      const lastKey = amountKeys[amountKeys.length - 1];
+      amount = round2(parseFloat(row[lastKey]) || 0);
+    }
+    
+    return { 
+      date: parseDate(getCol(row, 'inv. date', 'inv date', 'invoice date')), 
+      unit: String(getCol(row, 'unit', 'dept', 'department') || '').toUpperCase().trim(), 
+      territory: normTerritory(getCol(row, 'territory', 'teritory')), 
+      amt: amount, 
+    };
+  }).filter(r => r.date && r.unit && r.amt > 0 && r.territory !== ''); 
+};
+
+/* Export Functions */
+window.exportToExcel = (type) => {
+  const wb = XLSX.utils.book_new();
+  
+  if (type === 'monthly') {
+    // Ensure monthly data is generated
+    if (!currentMonthlyChartData) {
+      alert('Please wait for the charts to load before exporting.');
+      return;
+    }
+    
+    const monthlyArray = currentMonthlyChartData.labels.map((label, idx) => ({
+      Month: label,
+      IMD: currentMonthlyChartData.imd[idx],
+      DCD: currentMonthlyChartData.dcd[idx],
+      TRD: currentMonthlyChartData.trd[idx],
+      MED: currentMonthlyChartData.med[idx],
+      Total: currentMonthlyChartData.total[idx]
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(monthlyArray);
+    ws['!cols'] = [
+      { wch: 15 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Monthly Sales');
+    
+  } else if (type === 'daily') {
+    // Ensure daily data is generated
+    if (!currentDailyChartData) {
+      alert('Please view the Day-wise tab first before exporting.');
+      return;
+    }
+    
+    const fMonth = document.getElementById('f-month').value;
+    const fDept = document.getElementById('f-dept').value;
+    const fTer = document.getElementById('f-territory').value;
+    
+    const dailyArray = currentDailyChartData.labels.map((label, idx) => ({
+      Date: label,
+      Amount: currentDailyChartData.data[idx],
+      Unit: fDept,
+      Territory: fTer
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(dailyArray);
+    ws['!cols'] = [
+      { wch: 18 }, { wch: 18 }, { wch: 12 }, { wch: 14 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Daily Sales');
+  }
+  
+  const filename = `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(wb, filename);
+};
+
+/* UI Update Logic */
+const renderKPI = (rows) => {
+  const grand = round2(rows.reduce((s,r) => s+r.amt, 0));
+  const items = [
+    { label: 'Grand Total', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows · Total Excel: ' + totalExcelRows, key: 'grand' },
+    ...DEPTS.map(d => { 
+      const v = round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)); 
+      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v/grand*100).toFixed(1)+'% of total' : '—', key: d }; 
+    }),
+    { label: 'Export',   val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0)),   color: TER_COLORS.EXPORT,   sub: 'Export sales', key: 'EXPORT' },
+    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
+    { label: 'General',  val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s,r) => s+r.amt, 0)),  color: TER_COLORS.GENERAL,  sub: 'General sales', key: 'GENERAL' },
+  ];
+  document.getElementById('kpi-row').innerHTML = items.map(k => 
+    `<div class="kpi" data-kpi="${k.key}">
+      <div class="label">${k.label}</div>
+      <div class="val" style="color:${k.color}">${fmt(k.val)}</div>
+      <div class="sub">${k.sub}</div>
+    </div>`
+  ).join('');
+};
+
+/* Monthly Charts Logic */
+const renderMonthly = (rows) => {
+  const map = {};
+  rows.forEach(({ date, unit, amt }) => { 
+    const mk = monthKey(date); 
+    if (!map[mk]) map[mk] = { _d: date, total: 0, IMD: 0, DCD: 0, TRD: 0, MED: 0 }; 
+    map[mk].total += amt; 
+    if (map[mk][unit] !== undefined) map[mk][unit] += amt; 
+  });
+  
+  const sorted = Object.entries(map).sort((a,b) => a[1]._d - b[1]._d);
+  const labels = sorted.map(([k]) => k);
+  
+  // Store chart data for export
+  currentMonthlyChartData = {
+    labels: labels,
+    total: sorted.map(([,v]) => round2(v.total)),
+    imd: sorted.map(([,v]) => round2(v.IMD)),
+    dcd: sorted.map(([,v]) => round2(v.DCD)),
+    trd: sorted.map(([,v]) => round2(v.TRD)),
+    med: sorted.map(([,v]) => round2(v.MED))
+  };
+
+  mkChart('chart-monthly-total', 'bar', { 
+    labels, 
+    datasets: [{ 
+      data: currentMonthlyChartData.total, 
+      backgroundColor: '#3b82f6', 
+      borderRadius: 8, 
+      maxBarThickness: 48,
+      hoverBackgroundColor: '#2563eb'
+    }] 
+  }, { 
+    responsive: true, 
+    maintainAspectRatio: true, 
+    plugins: { 
+      legend: { display: false }, 
+      tooltip: tooltipCfg 
+    }, 
+    scales: scaleCfg() 
+  });
+
+  mkChart('chart-monthly-stack', 'bar', { 
+    labels, 
+    datasets: DEPTS.map((d,i) => ({ 
+      label: d, 
+      data: currentMonthlyChartData[d.toLowerCase()], 
+      backgroundColor: Object.values(DEPT_COLORS)[i], 
+      borderColor: '#ffffff', 
+      borderWidth: 1, 
+      borderRadius: i === 3 ? 6 : 0, 
+      maxBarThickness: 48 
+    })) 
+  }, { 
+    responsive: true, 
+    maintainAspectRatio: true, 
+    plugins: { 
+      legend: { 
+        display: true, 
+        labels: { 
+          color: AXIS_TEXT, 
+          font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' }, 
+          boxWidth: 10, 
+          boxHeight: 10, 
+          padding: 10,
+          usePointStyle: true,
+          pointStyle: 'circle'
+        } 
+      }, 
+      tooltip: tooltipCfg 
+    }, 
+    scales: { 
+      x: { ...scaleCfg().x, stacked: true }, 
+      y: { ...scaleCfg().y, stacked: true } 
+    } 
+  });
+
+  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)));
+  mkChart('chart-pie', 'doughnut', { 
+    labels: DEPTS, 
+    datasets: [{ 
+      data: pieTotals, 
+      backgroundColor: Object.values(DEPT_COLORS), 
+      borderColor: '#ffffff', 
+      borderWidth: 2, 
+      hoverOffset: 8 
+    }] 
+  }, { 
+    responsive: true, 
+    maintainAspectRatio: true, 
+    cutout: '65%', 
+    plugins: { 
+      tooltip: tooltipCfg, 
+      legend: { 
+        position: 'bottom', 
+        labels: { 
+          color: AXIS_TEXT, 
+          font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' }, 
+          boxWidth: 10, 
+          padding: 10,
+          usePointStyle: true,
+          pointStyle: 'circle'
+        } 
+      } 
+    } 
+  });
+};
+
+/* Daily Chart Logic */
+const renderDaily = () => {
+  const fMonth = document.getElementById('f-month').value;
+  const fDept  = document.getElementById('f-dept').value;
+  const fTer   = document.getElementById('f-territory').value;
+  if (!fMonth) return;
+
+  const filtered = allRows.filter(r => 
+    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
+    (fDept === 'all' || r.unit === fDept) && 
+    (fTer === 'all' || r.territory === fTer)
+  );
+
+  const dayMap = {};
+  
+  if (fMonth === 'all') {
+    filtered.forEach(({ date, amt }) => { 
+      const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); 
+      dayMap[dk] = round2((dayMap[dk] || 0) + amt); 
+    });
+    
+    const allDates = Object.keys(dayMap).sort((a,b) => {
+      const parseDateStr = (str) => {
+        const parts = str.split(' '); 
+        const day = parseInt(parts[0]);
+        const monthIndex = MONTHS.indexOf(parts[1]); 
+        const year = parseInt(parts[2]);
+        return new Date(year, monthIndex, day);
+      };
+      return parseDateStr(a) - parseDateStr(b);
+    });
+    
+    const data = allDates.map(d => dayMap[d]);
+    
+    // Store chart data for export
+    currentDailyChartData = {
+      labels: allDates,
+      data: data
+    };
+    
+    document.getElementById('day-count').textContent = data.filter(v => v > 0).length + ' days with sales';
+    mkChart('chart-daily', 'bar', { 
+      labels: allDates, 
+      datasets: [{ 
+        label: 'Sales', 
+        data, 
+        backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'), 
+        borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'), 
+        borderWidth: 1, 
+        borderRadius: 4, 
+        maxBarThickness: 36 
+      }] 
+    }, { 
+      responsive: true, 
+      maintainAspectRatio: true, 
+      plugins: { 
+        legend: { display: false }, 
+        tooltip: tooltipCfg 
+      }, 
+      scales: scaleCfg() 
+    });
+    return;
+  }
+
+  const [mon, yr] = fMonth.split(' ');
+  const monthIndex = MONTHS.indexOf(mon);
+  const year = +yr;
+  const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+  
+  filtered.forEach(({ date, amt }) => { 
+    const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); 
+    dayMap[dk] = round2((dayMap[dk] || 0) + amt); 
+  });
+  
+  const labels = [], data = [];
+  for (let d = 1; d <= totalDays; d++) { 
+    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    labels.push(fullDate); 
+    data.push(dayMap[fullDate] || 0); 
+  }
+  
+  // Store chart data for export
+  currentDailyChartData = {
+    labels: labels,
+    data: data
+  };
+  
+  const salesDays = data.filter(v => v > 0).length;
+  document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0`;
+  
+  mkChart('chart-daily', 'bar', { 
+    labels, 
+    datasets: [{ 
+      label: 'Sales', 
+      data, 
+      backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'), 
+      borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'), 
+      borderWidth: 1, 
+      borderRadius: 4, 
+      maxBarThickness: 36 
+    }] 
+  }, { 
+    responsive: true, 
+    maintainAspectRatio: true, 
+    plugins: { 
+      legend: { display: false }, 
+      tooltip: tooltipCfg 
+    }, 
+    scales: scaleCfg() 
+  });
+};
+
+
+/* Component Population */
+const populateMonths = (rows) => {
+  const seen = new Set();
+  rows.forEach(r => seen.add(monthKey(r.date)));
+  const sorted = [...seen].sort((a,b) => { 
+    const toMs = s => { const [m,y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); }; 
+    return toMs(a) - toMs(b); 
+  });
+  const sel = document.getElementById('f-month');
+  sel.innerHTML = '<option value="all">All Months</option>' + sorted.map(m => `<option value="${m}">${m}</option>`).join('');
+  sel.value = 'all';
+};
+
+/* Event Listeners */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tab-monthly').style.display = tab === 'monthly' ? '' : 'none';
+    document.getElementById('tab-daily').style.display   = tab === 'daily'   ? '' : 'none';
+    if (tab === 'daily') renderDaily();
+  });
+});
+
+['f-month','f-dept','f-territory'].forEach(id => document.getElementById(id).addEventListener('change', renderDaily));
+
+/* Refresh Utility */
+
+window.manualRefresh = () => {
+  const loader = document.getElementById('loader');
+  loader.style.display = 'flex';
+  loader.classList.remove('hide');
+  
+  fetch('data.xlsx?' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
+    .then(buf => {
+      allRows = parseExcel(buf);
+      if (!allRows.length) throw new Error('No valid rows found');
+      
+      document.getElementById('meta').textContent = allRows.length.toLocaleString() + ' valid rows · Total Excel rows: ' + totalExcelRows;
+      document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+      
+      renderKPI(allRows);
+      renderMonthly(allRows);
+      populateMonths(allRows);
+      
+      const activeTab = document.querySelector('.tab.active').dataset.tab;
+      if (activeTab === 'daily') renderDaily();
+      
+      loader.classList.add('hide');
+      setTimeout(() => loader.style.display = 'none', 500);
+    })
+    .catch(err => {
+      loader.style.display = 'none';
+      const box = document.getElementById('error');
+      box.classList.add('show');
+      box.querySelector('p').textContent = err.message;
+    });
+};
+
+/* Initialization */
+
+const loadData = () => {
+  fetch('data.xlsx?' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('data.xlsx not found — make sure both files are in the same folder and open via Live Server'); return r.arrayBuffer(); })
+    .then(buf => {
+      allRows = parseExcel(buf);
+      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Total Amt');
+      
+      const loader = document.getElementById('loader');
+      loader.classList.add('hide');
+      setTimeout(() => loader.style.display = 'none', 500);
+      
+      document.getElementById('app').style.display = '';
+      document.getElementById('meta').textContent = allRows.length.toLocaleString() + ' valid rows · Total Excel rows: ' + totalExcelRows;
+      document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+      
+      renderKPI(allRows);
+      renderMonthly(allRows);
+      populateMonths(allRows);
+    })
+    .catch(err => {
+      document.getElementById('loader').style.display = 'none';
+      const box = document.getElementById('error');
+      box.classList.add('show');
+      box.querySelector('p').textContent = err.message;
+    });
+};
+loadData();
+</script>
+</body>
+</html>
