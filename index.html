@@ -297,6 +297,8 @@ header h1 span {
 #content { padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
 /* Filters Bar */
+
+
 .filters { 
   display: flex; 
   gap: 12px; 
@@ -650,10 +652,10 @@ const parseExcel = (buf) => {
   totalExcelRows = json.length;
   
   return json.map(row => {
-    const amountKeys = Object.keys(row).filter(key => 
-      key.toLowerCase().trim() === 'total amt' || 
-      key.toLowerCase().trim() === 'totalamt'
-    );
+    const amountKeys = Object.keys(row).filter(key => {
+      const kl = key.toLowerCase().trim();
+      return kl === 'sale amt' || kl === 'sale amt.';
+    });
     
     let amount = 0;
     if (amountKeys.length > 0) {
@@ -946,7 +948,7 @@ const renderDaily = () => {
   
   const salesDays = data.filter(v => v > 0).length;
   document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0`;
-  
+
   mkChart('chart-daily', 'bar', { 
     labels, 
     datasets: [{ 
@@ -969,8 +971,8 @@ const renderDaily = () => {
   });
 };
 
-
 /* Component Population */
+
 const populateMonths = (rows) => {
   const seen = new Set();
   rows.forEach(r => seen.add(monthKey(r.date)));
@@ -984,6 +986,7 @@ const populateMonths = (rows) => {
 };
 
 /* Event Listeners */
+
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1038,7 +1041,7 @@ const loadData = () => {
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found — make sure both files are in the same folder and open via Live Server'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
-      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Total Amt');
+      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Sale Amt');
       
       const loader = document.getElementById('loader');
       loader.classList.add('hide');
@@ -1060,6 +1063,7 @@ const loadData = () => {
     });
 };
 loadData();
+
 </script>
 </body>
 </html>
