@@ -669,7 +669,7 @@ const parseExcel = (buf) => {
       territory: normTerritory(getCol(row, 'territory', 'teritory')), 
       amt: amount, 
     };
-  }).filter(r => r.date && r.unit && r.amt > 0 && r.territory !== ''); 
+  }).filter(r => r.date && r.unit && r.amt > 0); 
 };
 
 /* Export Functions */
