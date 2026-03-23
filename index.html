@@ -136,7 +136,7 @@ h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
   display: none; 
   position: fixed; 
   inset: 0; 
-  background: #f8fafc; /* Matches your loader background */
+  background: #f8fafc;
   flex-direction: column; 
   align-items: center; 
   justify-content: center; 
@@ -151,7 +151,6 @@ h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
   animation: errorReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Warning Icon to grab attention */
 #error::before {
   content: "!";
   width: 50px;
@@ -191,12 +190,11 @@ h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
   border-radius: 6px; 
   border: 1px solid #e2e8f0;
   font-size: 14px; 
-  color: #0ea5e9; /* Matches your loader's blue accent */
+  color: #0ea5e9;
   font-family: 'Courier New', monospace;
   font-weight: 600;
 }
 
-/* Animations */
 @keyframes errorReveal {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -207,6 +205,7 @@ h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
+
 /* Header & Controls */
 
 header { 
@@ -345,6 +344,7 @@ header h1 span {
 .btn-success:hover {
   background: #059669;
 }
+
 /* export button */
 .export-buttons {
   display: flex;
@@ -434,6 +434,7 @@ header h1 span {
     box-sizing: border-box;
   }
 }
+
 /* KPI Grid */
 .kpi-row { 
   display: grid; 
@@ -518,23 +519,21 @@ header h1 span {
 
 /* Navigation Tabs */
 
-
 .tabs { 
   display: flex; 
   gap: 8px; 
   padding: 8px 20px; 
-  /* Glassmorphism effect to match your header */
   background: rgba(248, 250, 252, 0.8);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #e2e8f0; 
   overflow-x: auto; 
-  scrollbar-width: none; /* Hide scrollbar for a cleaner look */
+  scrollbar-width: none;
   position: sticky;
-  top: 65px; /* Adjust based on your header height */
+  top: 65px;
   z-index: 90;
 }
 
-.tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome/Safari */
+.tabs::-webkit-scrollbar { display: none; }
 
 .tab { 
   font-family: 'Inter', sans-serif; 
@@ -543,30 +542,27 @@ header h1 span {
   padding: 10px 20px; 
   background: transparent; 
   border: none; 
-  color: #64748b; /* var(--muted) substitute */
+  color: #64748b;
   cursor: pointer; 
-  border-radius: 12px; /* Pill shape */
+  border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
   white-space: nowrap; 
   flex-shrink: 0; 
   position: relative;
 }
 
-/* Hover state: subtle background lift */
 .tab:hover { 
   color: #0ea5e9; 
   background: rgba(14, 165, 233, 0.05); 
 }
 
-/* Active state: The "Pill" look */
 .tab.active { 
   color: #ffffff; 
-  background: #0ea5e9; /* Your accent color */
+  background: #0ea5e9;
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
   transform: translateY(-1px);
 }
 
-/* Subtle "Active Indicator" Dot */
 .tab.active::after {
   content: "";
   position: absolute;
@@ -586,7 +582,6 @@ header h1 span {
   margin: 0 auto; 
   width: 100%; 
   box-sizing: border-box;
-  /* Smooth fade-up when switching tabs */
   animation: contentFadeUp 0.5s ease-out;
 }
 
@@ -596,7 +591,6 @@ header h1 span {
 }
 
 /* Filters Bar */
-
 
 .filters { 
   display: flex; 
@@ -641,7 +635,7 @@ header h1 span {
   background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-#day-count { 
+#day-count, #customer-count { 
   font-size: clamp(11px,2.5vw,13px); 
   color: var(--muted); 
   align-self: center; 
@@ -718,7 +712,7 @@ canvas { display: block; width: 100% !important; height: auto !important; }
   #content { padding: 12px; }
   .filters { padding: 12px; gap: 8px; flex-direction: column; align-items: stretch; }
   .filters > div { width: 100%; min-width: 100%; }
-  #day-count { width: 100%; text-align: center; white-space: normal; }
+  #day-count, #customer-count { width: 100%; text-align: center; white-space: normal; }
   .card { padding: 14px 12px; border-radius: 10px; }
   .two-col { gap: 12px; }
   .canvas-container { min-height: 160px; }
@@ -776,6 +770,7 @@ canvas { display: block; width: 100% !important; height: auto !important; }
   <div class="tabs">
     <button class="tab active" data-tab="monthly">All Units Monthly Overview</button>
     <button class="tab" data-tab="daily">Day-wise</button>
+    <button class="tab" data-tab="customer">Customer</button>
   </div>
 
   <div id="content">
@@ -814,16 +809,16 @@ canvas { display: block; width: 100% !important; height: auto !important; }
       </div>
     </div>
 
-      <div id="tab-daily" style="display:none;">
-        <div class="export-buttons">
-          <button class="btn btn-success" onclick="exportToExcel('daily')">
-            <svg viewBox="0 0 24 24" width="14" height="14">
-              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            Export Daily to Excel
-          </button>
-        </div>
-      
+    <div id="tab-daily" style="display:none;">
+      <div class="export-buttons">
+        <button class="btn btn-success" onclick="exportToExcel('daily')">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          Export Daily to Excel
+        </button>
+      </div>
+    
       <div class="filters">
         <div><label>Month</label><select id="f-month"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="f-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
@@ -835,6 +830,53 @@ canvas { display: block; width: 100% !important; height: auto !important; }
         <p>All calendar days shown · days with no sales shown as ₹ 0</p>
         <div class="canvas-container medium">
           <canvas id="chart-daily"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-customer" style="display:none;">
+      <div class="export-buttons">
+        <button class="btn btn-success" onclick="exportToExcel('customer-overview')">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          Export Customer Overview
+        </button>
+        <button class="btn btn-success" onclick="exportToExcel('customer-daily')">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          Export Customer Daily
+        </button>
+      </div>
+
+      <!-- Customer Overview Section -->
+      <div class="filters">
+        <div><label>Month</label><select id="fc-month-overview"><option value="all">All Months</option></select></div>
+        <div><label>Units</label><select id="fc-dept-overview"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
+        <div><label>Territory</label><select id="fc-territory-overview"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <span id="customer-count"></span>
+      </div>
+      <div class="card">
+        <h3>Customer Sales Overview</h3>
+        <p>Total sales per customer for selected filters</p>
+        <div class="canvas-container">
+          <canvas id="chart-customer-overview"></canvas>
+        </div>
+      </div>
+
+      <!-- Customer Day-wise Section -->
+      <div class="filters">
+        <div><label>Month</label><select id="fc-month-daily"><option value="all">All Months</option></select></div>
+        <div><label>Units</label><select id="fc-dept-daily"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
+        <div><label>Territory</label><select id="fc-territory-daily"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <div><label>Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
+      </div>
+      <div class="card">
+        <h3>Customer Day-wise Sales</h3>
+        <p>Daily sales for selected customer · days with no sales shown as ₹ 0</p>
+        <div class="canvas-container medium">
+          <canvas id="chart-customer-daily"></canvas>
         </div>
       </div>
     </div>
@@ -901,7 +943,7 @@ const mkChart = (id, type, data, opts) => {
 const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
 const fmt = (v) => { 
   v = round2(v); 
-  if (v >= 1e7) return  (v/1e7).toFixed(2) + ' Cr'; 
+  if (v >= 1e7) return (v/1e7).toFixed(2) + ' Cr'; 
   if (v >= 1e5) return (v/1e5).toFixed(2) + ' L'; 
   return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
 };
@@ -943,6 +985,8 @@ let allRows = [];
 let totalExcelRows = 0;
 let currentMonthlyChartData = null;
 let currentDailyChartData = null;
+let currentCustomerOverviewData = null;
+let currentCustomerDailyData = null;
 
 /* Main Parser */
 const parseExcel = (buf) => { 
@@ -967,6 +1011,7 @@ const parseExcel = (buf) => {
       date: parseDate(getCol(row, 'inv. date', 'inv date', 'invoice date')), 
       unit: String(getCol(row, 'unit', 'dept', 'department') || '').toUpperCase().trim(), 
       territory: normTerritory(getCol(row, 'territory', 'teritory')), 
+      customer: String(getCol(row, 'benf. name', 'beneficiary name', 'customer') || '').trim(),
       amt: amount, 
     };
   }).filter(r => r.date && r.unit && r.amt > 0); 
@@ -977,7 +1022,6 @@ window.exportToExcel = (type) => {
   const wb = XLSX.utils.book_new();
   
   if (type === 'monthly') {
-    // Ensure monthly data is generated
     if (!currentMonthlyChartData) {
       alert('Please wait for the charts to load before exporting.');
       return;
@@ -1000,7 +1044,6 @@ window.exportToExcel = (type) => {
     XLSX.utils.book_append_sheet(wb, ws, 'Monthly Sales');
     
   } else if (type === 'daily') {
-    // Ensure daily data is generated
     if (!currentDailyChartData) {
       alert('Please view the Day-wise tab first before exporting.');
       return;
@@ -1023,6 +1066,43 @@ window.exportToExcel = (type) => {
     ];
     
     XLSX.utils.book_append_sheet(wb, ws, 'Daily Sales');
+    
+  } else if (type === 'customer-overview') {
+    if (!currentCustomerOverviewData) {
+      alert('Please view the Customer tab first before exporting.');
+      return;
+    }
+    
+    const customerArray = currentCustomerOverviewData.labels.map((label, idx) => ({
+      Customer: label,
+      'Total Sales': currentCustomerOverviewData.data[idx]
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(customerArray);
+    ws['!cols'] = [
+      { wch: 35 }, { wch: 20 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Customer Overview');
+    
+  } else if (type === 'customer-daily') {
+    if (!currentCustomerDailyData) {
+      alert('Please select a customer in the day-wise section first.');
+      return;
+    }
+    
+    const customerDailyArray = currentCustomerDailyData.labels.map((label, idx) => ({
+      Date: label,
+      Amount: currentCustomerDailyData.data[idx],
+      Customer: document.getElementById('fc-customer').selectedOptions[0]?.text || ''
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(customerDailyArray);
+    ws['!cols'] = [
+      { wch: 18 }, { wch: 20 }, { wch: 35 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Customer Daily Sales');
   }
   
   const filename = `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
@@ -1064,7 +1144,6 @@ const renderMonthly = (rows) => {
   const sorted = Object.entries(map).sort((a,b) => a[1]._d - b[1]._d);
   const labels = sorted.map(([k]) => k);
   
-  // Store chart data for export
   currentMonthlyChartData = {
     labels: labels,
     total: sorted.map(([,v]) => round2(v.total)),
@@ -1193,7 +1272,6 @@ const renderDaily = () => {
     
     const data = allDates.map(d => dayMap[d]);
     
-    // Store chart data for export
     currentDailyChartData = {
       labels: allDates,
       data: data
@@ -1240,7 +1318,6 @@ const renderDaily = () => {
     data.push(dayMap[fullDate] || 0); 
   }
   
-  // Store chart data for export
   currentDailyChartData = {
     labels: labels,
     data: data
@@ -1271,6 +1348,196 @@ const renderDaily = () => {
   });
 };
 
+/* Customer Overview Chart */
+const renderCustomerOverview = () => {
+  const fMonth = document.getElementById('fc-month-overview').value;
+  const fDept = document.getElementById('fc-dept-overview').value;
+  const fTer = document.getElementById('fc-territory-overview').value;
+
+  const filtered = allRows.filter(r => 
+    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
+    (fDept === 'all' || r.unit === fDept) && 
+    (fTer === 'all' || r.territory === fTer) &&
+    r.customer
+  );
+
+  const customerMap = {};
+  filtered.forEach(({ customer, amt }) => {
+    customerMap[customer] = round2((customerMap[customer] || 0) + amt);
+  });
+
+  const sorted = Object.entries(customerMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20);
+
+  const labels = sorted.map(([name]) => name);
+  const data = sorted.map(([, amt]) => amt);
+
+  currentCustomerOverviewData = { labels, data };
+
+  document.getElementById('customer-count').textContent = 
+    `Showing top ${labels.length} customers · Total: ${Object.keys(customerMap).length} customers`;
+
+  mkChart('chart-customer-overview', 'bar', {
+    labels,
+    datasets: [{
+      label: 'Sales',
+      data,
+      backgroundColor: '#3b82f680',
+      borderColor: '#3b82f6',
+      borderWidth: 1,
+      borderRadius: 6,
+      maxBarThickness: 48
+    }]
+  }, {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: tooltipCfg
+    },
+    scales: {
+      x: {
+        ...scaleCfg().x,
+        ticks: {
+          ...axisCfg,
+          maxRotation: 45,
+          minRotation: 45
+        }
+      },
+      y: scaleCfg().y
+    }
+  });
+};
+
+/* Customer Daily Chart */
+const renderCustomerDaily = () => {
+  const fMonth = document.getElementById('fc-month-daily').value;
+  const fDept = document.getElementById('fc-dept-daily').value;
+  const fTer = document.getElementById('fc-territory-daily').value;
+  const fCustomer = document.getElementById('fc-customer').value;
+
+  if (!fMonth || !fCustomer) {
+    if (charts['chart-customer-daily']) {
+      charts['chart-customer-daily'].destroy();
+      delete charts['chart-customer-daily'];
+    }
+    return;
+  }
+
+  const filtered = allRows.filter(r => 
+    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
+    (fDept === 'all' || r.unit === fDept) && 
+    (fTer === 'all' || r.territory === fTer) &&
+    r.customer === fCustomer
+  );
+
+  const dayMap = {};
+
+  if (fMonth === 'all') {
+    filtered.forEach(({ date, amt }) => {
+      const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      dayMap[dk] = round2((dayMap[dk] || 0) + amt);
+    });
+
+    const allDates = Object.keys(dayMap).sort((a,b) => {
+      const parseDateStr = (str) => {
+        const parts = str.split(' ');
+        const day = parseInt(parts[0]);
+        const monthIndex = MONTHS.indexOf(parts[1]);
+        const year = parseInt(parts[2]);
+        return new Date(year, monthIndex, day);
+      };
+      return parseDateStr(a) - parseDateStr(b);
+    });
+
+    const data = allDates.map(d => dayMap[d]);
+
+    currentCustomerDailyData = { labels: allDates, data };
+
+    mkChart('chart-customer-daily', 'bar', {
+      labels: allDates,
+      datasets: [{
+        label: 'Sales',
+        data,
+        backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'),
+        borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'),
+        borderWidth: 1,
+        borderRadius: 4,
+        maxBarThickness: 36
+      }]
+    }, {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: tooltipCfg
+      },
+      scales: scaleCfg()
+    });
+    return;
+  }
+
+  const [mon, yr] = fMonth.split(' ');
+  const monthIndex = MONTHS.indexOf(mon);
+  const year = +yr;
+  const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+
+  filtered.forEach(({ date, amt }) => {
+    const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    dayMap[dk] = round2((dayMap[dk] || 0) + amt);
+  });
+
+  const labels = [], data = [];
+  for (let d = 1; d <= totalDays; d++) {
+    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    labels.push(fullDate);
+    data.push(dayMap[fullDate] || 0);
+  }
+
+  currentCustomerDailyData = { labels, data };
+
+  mkChart('chart-customer-daily', 'bar', {
+    labels,
+    datasets: [{
+      label: 'Sales',
+      data,
+      backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'),
+      borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'),
+      borderWidth: 1,
+      borderRadius: 4,
+      maxBarThickness: 36
+    }]
+  }, {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: tooltipCfg
+    },
+    scales: scaleCfg()
+  });
+};
+
+/* Populate Customer Dropdown */
+const populateCustomerDropdown = () => {
+  const fMonth = document.getElementById('fc-month-daily').value;
+  const fDept = document.getElementById('fc-dept-daily').value;
+  const fTer = document.getElementById('fc-territory-daily').value;
+
+  const filtered = allRows.filter(r => 
+    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
+    (fDept === 'all' || r.unit === fDept) && 
+    (fTer === 'all' || r.territory === fTer) &&
+    r.customer
+  );
+
+  const customers = [...new Set(filtered.map(r => r.customer))].sort();
+  const sel = document.getElementById('fc-customer');
+  sel.innerHTML = '<option value="">Select Customer</option>' + 
+    customers.map(c => `<option value="${c}">${c}</option>`).join('');
+};
+
 /* Component Population */
 
 const populateMonths = (rows) => {
@@ -1280,9 +1547,16 @@ const populateMonths = (rows) => {
     const toMs = s => { const [m,y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); }; 
     return toMs(a) - toMs(b); 
   });
-  const sel = document.getElementById('f-month');
-  sel.innerHTML = '<option value="all">All Months</option>' + sorted.map(m => `<option value="${m}">${m}</option>`).join('');
-  sel.value = 'all';
+  
+  const monthsHTML = '<option value="all">All Months</option>' + sorted.map(m => `<option value="${m}">${m}</option>`).join('');
+  
+  document.getElementById('f-month').innerHTML = monthsHTML;
+  document.getElementById('fc-month-overview').innerHTML = monthsHTML;
+  document.getElementById('fc-month-daily').innerHTML = monthsHTML;
+  
+  document.getElementById('f-month').value = 'all';
+  document.getElementById('fc-month-overview').value = 'all';
+  document.getElementById('fc-month-daily').value = 'all';
 };
 
 /* Event Listeners */
@@ -1293,12 +1567,33 @@ document.querySelectorAll('.tab').forEach(btn => {
     btn.classList.add('active');
     const tab = btn.dataset.tab;
     document.getElementById('tab-monthly').style.display = tab === 'monthly' ? '' : 'none';
-    document.getElementById('tab-daily').style.display   = tab === 'daily'   ? '' : 'none';
+    document.getElementById('tab-daily').style.display = tab === 'daily' ? '' : 'none';
+    document.getElementById('tab-customer').style.display = tab === 'customer' ? '' : 'none';
+    
     if (tab === 'daily') renderDaily();
+    if (tab === 'customer') {
+      renderCustomerOverview();
+      populateCustomerDropdown();
+    }
   });
 });
 
-['f-month','f-dept','f-territory'].forEach(id => document.getElementById(id).addEventListener('change', renderDaily));
+['f-month','f-dept','f-territory'].forEach(id => 
+  document.getElementById(id).addEventListener('change', renderDaily)
+);
+
+['fc-month-overview','fc-dept-overview','fc-territory-overview'].forEach(id => 
+  document.getElementById(id).addEventListener('change', renderCustomerOverview)
+);
+
+['fc-month-daily','fc-dept-daily','fc-territory-daily'].forEach(id => 
+  document.getElementById(id).addEventListener('change', () => {
+    populateCustomerDropdown();
+    renderCustomerDaily();
+  })
+);
+
+document.getElementById('fc-customer').addEventListener('change', renderCustomerDaily);
 
 /* Refresh Utility */
 
@@ -1322,6 +1617,10 @@ window.manualRefresh = () => {
       
       const activeTab = document.querySelector('.tab.active').dataset.tab;
       if (activeTab === 'daily') renderDaily();
+      if (activeTab === 'customer') {
+        renderCustomerOverview();
+        populateCustomerDropdown();
+      }
       
       loader.classList.add('hide');
       setTimeout(() => loader.style.display = 'none', 500);
@@ -1341,7 +1640,7 @@ const loadData = () => {
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found — make sure both files are in the same folder and open via Live Server'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
-      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Sale Amt');
+      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Benf. Name, Sale Amt');
       
       const loader = document.getElementById('loader');
       loader.classList.add('hide');
@@ -1363,10 +1662,11 @@ const loadData = () => {
     });
 };
 loadData();
+
 document.querySelectorAll('.tab').forEach(button => {
   button.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        button.classList.add('active');
+    button.classList.add('active');
     const content = document.getElementById('content');
     content.style.animation = 'none';
     content.offsetHeight; 
