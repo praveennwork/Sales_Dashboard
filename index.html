@@ -852,13 +852,14 @@ canvas { display: block; width: 100% !important; height: auto !important; }
 
       <!-- Customer Overview Section -->
       <div class="filters">
+        <div><label>Ranking</label><select id="fc-ranking"><option value="top10">Top 10 Customers</option><option value="bottom10">Bottom 10 Customers</option></select></div>
         <div><label>Month</label><select id="fc-month-overview"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="fc-dept-overview"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
         <div><label>Territory</label><select id="fc-territory-overview"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
         <span id="customer-count"></span>
       </div>
       <div class="card">
-        <h3>Customer Sales Overview</h3>
+        <h3>Customer Sales Overview <span id="last-data-date" style="float:right;font-size:12px;font-weight:500;color:#64748b;"></span></h3>
         <p>Total sales per customer for selected filters</p>
         <div class="canvas-container">
           <canvas id="chart-customer-overview"></canvas>
@@ -1350,6 +1351,7 @@ const renderDaily = () => {
 
 /* Customer Overview Chart */
 const renderCustomerOverview = () => {
+  const fRanking = document.getElementById('fc-ranking').value;
   const fMonth = document.getElementById('fc-month-overview').value;
   const fDept = document.getElementById('fc-dept-overview').value;
   const fTer = document.getElementById('fc-territory-overview').value;
@@ -1361,22 +1363,35 @@ const renderCustomerOverview = () => {
     r.customer
   );
 
+  // Get last date from filtered data
+  if (filtered.length > 0) {
+    const lastDate = filtered.reduce((max, r) => r.date > max ? r.date : max, filtered[0].date);
+    document.getElementById('last-data-date').textContent = 
+      'Data as of: ' + lastDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
   const customerMap = {};
   filtered.forEach(({ customer, amt }) => {
     customerMap[customer] = round2((customerMap[customer] || 0) + amt);
   });
 
-  const sorted = Object.entries(customerMap)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20);
+  let sorted = Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
+  
+  // Apply Top 10 or Bottom 10 filter
+  if (fRanking === 'top10') {
+    sorted = sorted.slice(0, 10);
+  } else if (fRanking === 'bottom10') {
+    sorted = sorted.slice(-10).reverse();
+  }
 
   const labels = sorted.map(([name]) => name);
   const data = sorted.map(([, amt]) => amt);
 
   currentCustomerOverviewData = { labels, data };
 
+  const rankingText = fRanking === 'top10' ? 'Top 10' : 'Bottom 10';
   document.getElementById('customer-count').textContent = 
-    `Showing top ${labels.length} customers · Total: ${Object.keys(customerMap).length} customers`;
+    `Showing ${rankingText} customers · Total: ${Object.keys(customerMap).length} customers`;
 
   mkChart('chart-customer-overview', 'bar', {
     labels,
@@ -1582,7 +1597,7 @@ document.querySelectorAll('.tab').forEach(btn => {
   document.getElementById(id).addEventListener('change', renderDaily)
 );
 
-['fc-month-overview','fc-dept-overview','fc-territory-overview'].forEach(id => 
+['fc-ranking','fc-month-overview','fc-dept-overview','fc-territory-overview'].forEach(id => 
   document.getElementById(id).addEventListener('change', renderCustomerOverview)
 );
 
