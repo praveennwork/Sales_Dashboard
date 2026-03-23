@@ -1,30 +1,44 @@
 # G-plast Sales Dashboard
 
 ## 📁 File Names
+
 - **Dashboard file:** `dashboard.html` (or any name you prefer)
 - **Data file:** `data.xlsx` (MUST be exactly this name)
 
+## 📁 Tech stack
+
+        - HTML
+        - CSS
+        - JavaScript
+        - SheetJS (for Excel file reading)
+        - Chart.js (for data visualization)
+        - React.js (for dashboard components)
+        - FMR Currency (for currency conversion)
+
+        
 ## 📁 Folder Structure
 
 your-project-folder/
 │
-├── dashboard.html    # The main dashboard file
-├── data.xlsx         # Your sales data (EXACT name)
-└── README.md         # This file
+├── dashboard.html # The main dashboard file
+├── data.xlsx # Your sales data (EXACT name)
+└── README.md # This file
 
 ## 📊 Supported Column Names
+
 The Excel file MUST have these columns (spelling matters):
 
 ### ✅ Required Columns:
 
-| Data Needed | Accepts These Column Names |
-|-------------|---------------------------|
-| **Date** | `Inv. Date` , `Inv Date` , `Invoice Date` |
-| **Unit** | `Unit` , `Dept` , `Department` |
-| **Territory** | `Territory` , `Teritory` |
-| **Amount** | `Total Amt` , `TotalAmt` (last column with this name) |
+| Data Needed   | Accepts These Column Names                            |
+| ------------- | ----------------------------------------------------- |
+| **Date**      | `Inv. Date` , `Inv Date` , `Invoice Date`             |
+| **Unit**      | `Unit` , `Dept` , `Department`                        |
+| **Territory** | `Territory` , `Teritory`                              |
+| **Amount**    | `Total Amt` , `TotalAmt` (last column with this name) |
 
 ### ✅ Your Excel Should Have:
+
 - `Inv. Date` ✓
 - `Unit` ✓
 - `Territory` ✓
@@ -33,13 +47,17 @@ The Excel file MUST have these columns (spelling matters):
 ## 🚀 How to Use
 
 ### 1️⃣ Setup Files
+
 1. Place `dashboard.html` and `data.xlsx` in the **same folder**
 2. Make sure your Excel file is named exactly `data.xlsx`
 
 ### 2️⃣ Open Dashboard
+
 **Option A: Using Live Server (Recommended)**
+
 - Install "Live Server" extension in VS Code
 - Right-click on `dashboard.html` → "Open with Live Server"
+
 ```
 
 ### 3️⃣ View Dashboard
@@ -93,25 +111,25 @@ The Excel file MUST have these columns (spelling matters):
 ## 🔧 Troubleshooting
 
 ### "Could not load data file" Error
-✅ Check if `data.xlsx` is in the same folder as `dashboard.html`  
-✅ Make sure file name is exactly `data.xlsx`  
-✅ Open via Live Server (not by double-clicking)  
+✅ Check if `data.xlsx` is in the same folder as `dashboard.html`
+✅ Make sure file name is exactly `data.xlsx`
+✅ Open via Live Server (not by double-clicking)
 ✅ Check browser console (F12) for detailed errors
 
 ### "No valid rows found" Error
-✅ Check column names match the supported names above  
-✅ Ensure dates are in Excel date format (not text)  
-✅ Verify amounts are numbers  
+✅ Check column names match the supported names above
+✅ Ensure dates are in Excel date format (not text)
+✅ Verify amounts are numbers
 ✅ Check that Unit and Territory columns have valid values
 
 ### Charts Not Displaying
-✅ Click "Refresh Data" button  
-✅ Try different browser (Chrome recommended)  
-✅ Clear browser cache (Ctrl+Shift+R)  
+✅ Click "Refresh Data" button
+✅ Try different browser (Chrome recommended)
+✅ Clear browser cache (Ctrl+Shift+R)
 
 ### Export Not Working
-✅ Make sure you're viewing a chart first  
-✅ Check if browser is blocking downloads  
+✅ Make sure you're viewing a chart first
+✅ Check if browser is blocking downloads
 ✅ Try clicking export button again
 ## 🎨 Features
 
@@ -142,3 +160,4 @@ The Excel file MUST have these columns (spelling matters):
 
 ---
 **Supported Browsers:** Chrome, Firefox, Edge, Safari (latest versions)
+```
