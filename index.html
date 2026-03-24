@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.5,user-scalable=yes"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
 <title>G-plast Sales Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* { margin: 0;
-   padding: 0;
-    box-sizing: border-box; 
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 :root {
-  --bg: #f8fafc; 
-  --bg2: #ffffff; 
-  --bg3: #f1f5f9; 
-  --border: #e2e8f0; 
+  --bg: #f8fafc;
+  --bg2: #ffffff;
+  --bg3: #f1f5f9;
+  --border: #e2e8f0;
   --border-hover: #cbd5e1;
-  --text: #0f172a; 
-  --muted: #64748b; 
-  --accent: #3b82f6; 
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #3b82f6;
   --accent-hover: #2563eb;
   --imd: #3b82f6;
   --dcd: #f59e0b;
@@ -29,283 +30,271 @@
   --export: #06b6d4;
   --domestic: #ef4444;
   --general: #f97316;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
 }
-
-body { 
-  background: var(--bg); 
-  color: var(--text); 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-  min-height: 100vh; 
-  overflow-x: hidden; 
-  width: 100%; 
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, .tab, .kpi .val {
+  font-family: 'Inter', sans-serif;
 }
 
-h1, h2, h3, .tab, .kpi .val { font-family: 'Inter', sans-serif; }
-
-/* Loading Animation */
-
+/* ========== ENHANCED LOADING ANIMATION ========== */
 #loader {
   position: fixed;
   inset: 0;
-  background: #f8fafc; 
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
   display: flex;
   flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
-  gap: 32px;
-  z-index: 9999;
-  transition: opacity 0.4s, visibility 0.4s;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  z-index: 999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.spinner {
+.loader-container {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 100px;
+  height: 100px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
-.spinner::before {
-  content: "";
+
+.loader-ring {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 4px solid #e2e8f0; 
-  border-top: 4px solid #38bdf8; 
-  border-left: 4px solid #38bdf8;
+  width: 80px;
+  height: 80px;
+  border: 3px solid transparent;
   border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
-  animation: morphSpin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  animation: ringPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
-.spinner::after {
-  content: "";
+
+.loader-ring-1 {
+  border-top-color: var(--accent);
+  border-right-color: var(--accent);
+  animation-delay: 0s;
+}
+
+.loader-ring-2 {
+  width: 60px;
+  height: 60px;
+  border-bottom-color: #f59e0b;
+  border-left-color: #f59e0b;
+  animation-delay: 0.3s;
+}
+
+.loader-ring-3 {
+  width: 40px;
+  height: 40px;
+  border-top-color: #10b981;
+  border-right-color: #10b981;
+  animation-delay: 0.6s;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+.loader-logo {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #0ea5e9; 
+  width: 30px;
+  height: 30px;
+  background: var(--accent);
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.3);
-  animation: orbit 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation: logoGlow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 15px var(--accent);
 }
-#loader p { 
-  font-size: 16px; 
+
+@keyframes logoGlow {
+  0%, 100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 5px var(--accent);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px var(--accent);
+  }
+}
+
+.loader-text {
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 1px;
-  text-align: center;
-  margin: 0;
-  background: linear-gradient(90deg, #64748b 0%, #0ea5e9 50%, #64748b 100%);
+  color: var(--text);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--accent), #f59e0b, var(--accent));
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 3s linear infinite;
+  animation: textShine 2s linear infinite;
 }
-@keyframes morphSpin {
-  0% {
-    transform: rotate(0deg);
-    border-radius: 50%;
-  }
-  50% {
-    transform: rotate(180deg);
-    border-radius: 25%; 
-    border-top-color: #94a3b8; 
-    border-left-color: #94a3b8;
-  }
-  100% {
-    transform: rotate(360deg);
-    border-radius: 50%;
+
+@keyframes textShine {
+  to {
+    background-position: 200% center;
   }
 }
 
-@keyframes orbit {
-  from { transform: rotate(0deg) translateX(28px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(28px) rotate(-360deg); }
+.loader-progress {
+  width: 200px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
-@keyframes shimmer {
-  to { background-position: -200% center; }
-}
-/*error */
-
-#error { 
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  background: #f8fafc;
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 20px; 
-  padding: 40px; 
-  text-align: center; 
-  z-index: 10000;
+.loader-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #f59e0b, #10b981);
+  border-radius: 3px;
+  animation: progressFill 1.8s ease-out forwards;
 }
 
-#error.show { 
-  display: flex; 
-  animation: errorReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes progressFill {
+  0% { width: 0%; }
+  30% { width: 45%; }
+  60% { width: 75%; }
+  100% { width: 100%; }
 }
 
-#error::before {
-  content: "!";
-  width: 50px;
-  height: 50px;
-  background: #fee2e2;
-  color: #ef4444;
-  border-radius: 50%;
+.loader-dots {
   display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.loader-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.loader-dot:nth-child(1) { animation-delay: 0s; }
+.loader-dot:nth-child(2) { animation-delay: 0.2s; }
+.loader-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Error */
+#error {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
-  animation: iconBounce 1s ease-out;
+  gap: 12px;
+  padding: 20px;
+  text-align: center;
+  z-index: 1000;
 }
-
-#error h2 { 
-  color: #1e293b; 
-  font-family: 'Inter', sans-serif; 
-  font-size: clamp(20px, 5vw, 24px); 
-  font-weight: 700; 
-  margin: 0;
+#error.show {
+  display: flex;
 }
-
-#error p { 
-  color: #64748b; 
-  font-size: clamp(14px, 3.5vw, 16px); 
-  max-width: 450px; 
-  line-height: 1.6; 
-  margin: 0;
-}
-
-#error code { 
-  background: #f1f5f9; 
-  padding: 4px 10px; 
-  border-radius: 6px; 
-  border: 1px solid #e2e8f0;
-  font-size: 14px; 
-  color: #0ea5e9;
-  font-family: 'Courier New', monospace;
+#error h2 {
+  color: #dc2626;
+  font-size: clamp(18px,5vw,24px);
   font-weight: 600;
 }
-
-@keyframes errorReveal {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+#error p {
+  color: var(--muted);
+  font-size: clamp(13px,3.5vw,15px);
+  max-width: 90%;
+  line-height: 1.6;
+}
+#error code {
+  background: var(--bg3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--accent);
+  display: inline-block;
 }
 
-@keyframes iconBounce {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-/* Header & Controls */
-
-header { 
-  background: rgba(255, 255, 255, 0.8); 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
-  padding: 12px 24px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  flex-wrap: wrap; 
-  gap: 16px; 
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01); 
-  position: sticky; 
-  top: 0; 
-  z-index: 100; 
-  width: 100%;
-  box-sizing: border-box;
-  animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-header h1 { 
-  font-size: clamp(20px, 5vw, 24px); 
-  font-weight: 800; 
-  color: #1e293b; 
-  letter-spacing: -0.03em; 
-  display: flex;
-  flex-direction: column; 
-}
-
-header h1 span { 
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 800;
-}
-
-#meta { 
-  font-size: 12px;
-  color: #64748b; 
-  margin-top: 2px; 
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-
-#refresh-info { 
-  font-size: 13px; 
-  color: #64748b; 
+/* Header */
+header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
-  background: #f1f5f9; 
-  padding: 6px 16px;
-  border-radius: 100px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+header h1 {
+  font-size: clamp(20px,4vw,24px);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+header h1 span {
+  color: var(--accent);
+  font-weight: 600;
+}
+#meta {
+  font-size: clamp(11px,2.5vw,13px);
+  color: var(--muted);
+  margin-top: 4px;
   font-weight: 500;
-  transition: all 0.3s ease;
 }
-#refresh-info:hover {
-  background: #e2e8f0;
-  transform: translateY(-1px);
+#refresh-info {
+  font-size: clamp(11px,2.5vw,13px);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 500;
 }
-
-#refresh-info b { 
-  color: #0ea5e9; 
-  font-weight: 700; 
-}
-#refresh-info::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background: #10b981; 
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulseGreen 2s infinite;
-}
-@keyframes slideDown {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(0); }
-}
-
-@keyframes pulseGreen {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-@media (max-width: 480px) {
-  header {
-    justify-content: center;
-    text-align: center;
-    padding: 16px;
-  }
-  #refresh-info {
-    width: 100%;
-    justify-content: center;
-  }
+#refresh-info b {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .btn {
@@ -337,7 +326,6 @@ header h1 span {
   height: 14px;
   fill: currentColor;
 }
-
 .btn-success {
   background: #10b981;
 }
@@ -345,105 +333,27 @@ header h1 span {
   background: #059669;
 }
 
-/* export button */
+/* Export buttons */
 .export-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
-  padding: 16px;
-  background: #f8fafc; 
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  justify-content: flex-start;
-  transition: all 0.3s ease;
-}
-.export-buttons .btn-success {
-  all: unset; 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 18px;
-  background: #ffffff;
-  color: #0f172a;
-  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg2);
   border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-.export-buttons .btn-success svg {
-  fill: #38bdf8; 
-  transition: transform 0.3s ease;
-}
-.export-buttons .btn-success:hover {
-  background: #ffff;
-  border-color: #38bdf8;
-  color: #0ea5e9;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 15px -3px rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-.export-buttons .btn-success:hover svg {
-  transform: scale(1.1);
+/* KPI Row */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 20px;
+  width: 100%;
 }
-.export-buttons .btn-success.is-loading {
-  color: transparent !important;
-  pointer-events: none;
-}
-
-.export-buttons .btn-success.is-loading svg {
-  opacity: 0;
-}
-
-.export-buttons .btn-success.is-loading::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 3px solid #f1f5f9;
-  border-top-color: #38bdf8;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-.export-buttons .btn-success.is-success {
-  background: #f0fdf4 !important;
-  border-color: #22c55e !important;
-  color: #15803d !important;
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
-}
-
-.export-buttons .btn-success.is-success svg {
-  fill: #22c55e;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@media (max-width: 640px) {
-  .export-buttons {
-    justify-content: center;
-    padding: 12px;
-  }
-  
-  .export-buttons .btn-success {
-    width: 100%; 
-    box-sizing: border-box;
-  }
-}
-
-/* KPI Grid */
-.kpi-row { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-  gap: 12px; 
-  padding: 20px; 
-  width: 100%; 
-}
-
 .kpi {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -453,9 +363,8 @@ header h1 span {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
 }
-
 .kpi::before {
   content: '';
   position: absolute;
@@ -463,230 +372,209 @@ header h1 span {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.05), transparent);
   transition: left 0.5s ease;
   z-index: 1;
   pointer-events: none;
 }
-
 .kpi:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--border-hover);
 }
-
 .kpi:hover::before {
   left: 100%;
 }
-
-.kpi .label { 
-  font-size: clamp(10px,2.2vw,12px); 
-  color: var(--muted); 
-  text-transform: uppercase; 
-  letter-spacing: 0.05em; 
-  margin-bottom: 6px; 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  position: relative; 
+.kpi .label {
+  font-size: clamp(10px,2.2vw,12px);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
   z-index: 2;
   font-weight: 600;
 }
-
-.kpi .val { 
-  font-size: clamp(16px,3.5vw,22px); 
-  font-weight: 700; 
-  line-height: 1.2; 
+.kpi .val {
+  font-size: clamp(16px,3.5vw,22px);
+  font-weight: 700;
+  line-height: 1.2;
   word-break: break-word;
   display: inline-block;
   transition: transform 0.2s ease;
-  position: relative; 
+  position: relative;
   z-index: 2;
   letter-spacing: -0.02em;
 }
-
-.kpi .sub { 
-  font-size: clamp(10px,2.2vw,12px); 
-  color: var(--muted); 
-  margin-top: 6px; 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  position: relative; 
+.kpi .sub {
+  font-size: clamp(10px,2.2vw,12px);
+  color: var(--muted);
+  margin-top: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
   z-index: 2;
   font-weight: 500;
 }
 
-/* Navigation Tabs */
-
-.tabs { 
-  display: flex; 
-  gap: 8px; 
-  padding: 8px 20px; 
-  background: rgba(248, 250, 252, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e2e8f0; 
-  overflow-x: auto; 
-  scrollbar-width: none;
-  position: sticky;
-  top: 65px;
-  z-index: 90;
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  width: 100%;
+}
+.tab {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(12px,3vw,14px);
+  font-weight: 600;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab:hover {
+  color: var(--text);
+}
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
-.tabs::-webkit-scrollbar { display: none; }
+#content {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
 
-.tab { 
-  font-family: 'Inter', sans-serif; 
-  font-size: clamp(12px, 3vw, 14px); 
-  font-weight: 600; 
-  padding: 10px 20px; 
-  background: transparent; 
-  border: none; 
-  color: #64748b;
-  cursor: pointer; 
+/* Filters */
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background: var(--bg2);
+  padding: 16px;
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-  white-space: nowrap; 
-  flex-shrink: 0; 
-  position: relative;
-}
-
-.tab:hover { 
-  color: #0ea5e9; 
-  background: rgba(14, 165, 233, 0.05); 
-}
-
-.tab.active { 
-  color: #ffffff; 
-  background: #0ea5e9;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-  transform: translateY(-1px);
-}
-
-.tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-}
-
-/* Content Area Animation */
-#content { 
-  padding: 24px; 
-  max-width: 1400px; 
-  margin: 0 auto; 
-  width: 100%; 
-  box-sizing: border-box;
-  animation: contentFadeUp 0.5s ease-out;
-}
-
-@keyframes contentFadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Filters Bar */
-
-.filters { 
-  display: flex; 
-  gap: 12px; 
-  margin-bottom: 20px; 
-  flex-wrap: wrap; 
-  align-items: flex-end; 
-  background: var(--bg2); 
-  padding: 16px; 
-  border-radius: 12px; 
-  border: 1px solid var(--border); 
-  width: 100%; 
+  border: 1px solid var(--border);
+  width: 100%;
   box-shadow: var(--shadow-sm);
 }
-.filters > div { flex: 1 1 150px; min-width: 130px; }
-.filters label { 
-  font-size: clamp(10px,2.2vw,12px); 
-  color: var(--muted); 
-  display: block; 
-  margin-bottom: 6px; 
-  text-transform: uppercase; 
-  letter-spacing: 0.04em; 
-  font-weight: 600; 
+.filters > div {
+  flex: 1 1 150px;
+  min-width: 130px;
 }
-.filters select { 
-  background: var(--bg3); 
-  border: 1px solid var(--border); 
-  color: var(--text); 
-  padding: 10px 12px; 
-  border-radius: 8px; 
-  font-family: 'Inter', sans-serif; 
-  font-size: clamp(13px,2.8vw,14px); 
-  cursor: pointer; 
-  outline: none; 
-  width: 100%; 
+.filters label {
+  font-size: clamp(10px,2.2vw,12px);
+  color: var(--muted);
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.filters select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(13px,2.8vw,14px);
+  cursor: pointer;
+  outline: none;
+  width: 100%;
   font-weight: 500;
   transition: all 0.2s;
 }
-.filters select:hover { border-color: var(--border-hover); }
-.filters select:focus { 
-  border-color: var(--accent); 
-  background: var(--bg2);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.filters select:hover {
+  border-color: var(--border-hover);
 }
-#day-count, #customer-count { 
-  font-size: clamp(11px,2.5vw,13px); 
-  color: var(--muted); 
-  align-self: center; 
-  background: var(--bg3); 
-  padding: 8px 14px; 
-  border-radius: 8px; 
-  white-space: nowrap; 
+.filters select:focus {
+  border-color: var(--accent);
+  background: var(--bg2);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+#day-count, #customer-count {
+  font-size: clamp(11px,2.5vw,13px);
+  color: var(--muted);
+  align-self: center;
+  background: var(--bg3);
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
   font-weight: 500;
 }
 
-/* Dashboard Cards */
-.card { 
-  background: var(--bg2); 
-  border: 1px solid var(--border); 
-  border-radius: 12px; 
-  padding: 18px; 
-  margin-bottom: 20px; 
-  box-shadow: var(--shadow-sm); 
-  width: 100%; 
+/* Cards */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
   transition: box-shadow 0.2s;
 }
-.card:hover { box-shadow: var(--shadow); }
-.card h3 { 
-  font-size: clamp(14px,3.2vw,16px); 
-  font-weight: 600; 
-  margin-bottom: 4px; 
-  color: var(--text); 
+.card:hover {
+  box-shadow: var(--shadow);
+}
+.card h3 {
+  font-size: clamp(14px,3.2vw,16px);
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
   letter-spacing: -0.01em;
 }
-.card p { 
-  font-size: clamp(12px,2.5vw,13px); 
-  color: var(--muted); 
-  margin-bottom: 16px; 
+.card p {
+  font-size: clamp(12px,2.5vw,13px);
+  color: var(--muted);
+  margin-bottom: 16px;
   font-weight: 500;
 }
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
-
-.canvas-container { 
-  position: relative; 
-  width: 100%; 
-  min-height: 200px; 
-  height: auto; 
-  margin: 0 auto; 
-  background: var(--bg); 
-  border-radius: 10px; 
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+.canvas-container {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  height: auto;
+  margin: 0 auto;
+  background: var(--bg);
+  border-radius: 10px;
   border: 1px solid var(--border);
   padding: 12px;
 }
-.canvas-container.medium { min-height: 150px; }
-canvas { display: block; width: 100% !important; height: auto !important; }
+.canvas-container.medium {
+  min-height: 150px;
+}
+canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
 
+/* Responsive */
 @media (max-width: 900px) {
   .two-col { grid-template-columns: 1fr; gap: 16px; }
   .kpi-row { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; padding: 16px; }
@@ -700,7 +588,6 @@ canvas { display: block; width: 100% !important; height: auto !important; }
   .export-buttons { flex-direction: column; }
   .export-buttons .btn { width: 100%; justify-content: center; }
 }
-
 @media (max-width: 600px) {
   header { flex-direction: column; align-items: flex-start; gap: 8px; }
   #refresh-info { text-align: left; width: 100%; }
@@ -718,20 +605,18 @@ canvas { display: block; width: 100% !important; height: auto !important; }
   .canvas-container { min-height: 160px; }
   .canvas-container.medium { min-height: 120px; }
 }
-
 @media (max-width: 380px) {
   .kpi-row { gap: 6px; padding: 10px; }
   .kpi { padding: 10px 8px; }
   .kpi .val { font-size: 14px; }
   .tab { padding: 8px 10px; font-size: 11px; }
 }
-
 @media (min-width: 1400px) {
   #content { padding: 28px 40px; }
   .kpi-row { padding: 24px 40px; }
   .kpi .val { font-size: 24px; }
   .kpi .label { font-size: 13px; }
-  .canvas-container { min-height: 240px; padding: 16px;}
+  .canvas-container { min-height: 240px; padding: 16px; }
   .canvas-container.medium { min-height: 170px; }
 }
 </style>
@@ -739,19 +624,33 @@ canvas { display: block; width: 100% !important; height: auto !important; }
 <body>
 
 <div id="loader">
-  <div class="spinner"></div>
-  <p>Loading dashboard…</p>
+  <div class="loader-container">
+    <div class="loader-ring loader-ring-1"></div>
+    <div class="loader-ring loader-ring-2"></div>
+    <div class="loader-ring loader-ring-3"></div>
+    <div class="loader-logo"></div>
+  </div>
+  <div class="loader-text">G-plast Dashboard</div>
+  <div class="loader-progress">
+    <div class="loader-progress-bar"></div>
+  </div>
+  <div class="loader-dots">
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+  </div>
 </div>
 
 <div id="error">
   <h2>Could not load data file</h2>
-  <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file and you are opening via Live Server — not by double-clicking.</p>
+  <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file.</p>
+  <button class="btn" onclick="location.reload()">Retry</button>
 </div>
 
 <div id="app" style="display:none;">
   <header>
     <div>
-      <h1>Sales <span>Dashboard G-Plast</span></h1>
+      <h1>Sales <span>Dashboard</span></h1>
       <div id="meta"></div>
     </div>
     <div id="refresh-info">
@@ -768,9 +667,9 @@ canvas { display: block; width: 100% !important; height: auto !important; }
   <div class="kpi-row" id="kpi-row"></div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="monthly">All Units Monthly Overview</button>
+    <button class="tab active" data-tab="monthly">Monthly Overview</button>
     <button class="tab" data-tab="daily">Day-wise</button>
-    <button class="tab" data-tab="customer">Customer</button>
+    <button class="tab" data-tab="customer">Customer Analysis</button>
   </div>
 
   <div id="content">
@@ -780,31 +679,21 @@ canvas { display: block; width: 100% !important; height: auto !important; }
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
           </svg>
-          Export Monthly to Excel
+          Export Monthly
         </button>
       </div>
-      
       <div class="card">
         <h3>Combined All Units Monthly Sales</h3>
-        <p>Total per month across all Units</p>
-        <div class="canvas-container">
-          <canvas id="chart-monthly-total"></canvas>
-        </div>
+        <div class="canvas-container"><canvas id="chart-monthly-total"></canvas></div>
       </div>
       <div class="two-col">
         <div class="card">
           <h3>Stacked by Units</h3>
-          <p>IMD · DCD · TRD · MED contribution per month</p>
-          <div class="canvas-container">
-            <canvas id="chart-monthly-stack"></canvas>
-          </div>
+          <div class="canvas-container"><canvas id="chart-monthly-stack"></canvas></div>
         </div>
         <div class="card">
           <h3>Department Share</h3>
-          <p>Proportion of total across all months</p>
-          <div class="canvas-container">
-            <canvas id="chart-pie"></canvas>
-          </div>
+          <div class="canvas-container"><canvas id="chart-pie"></canvas></div>
         </div>
       </div>
     </div>
@@ -815,10 +704,9 @@ canvas { display: block; width: 100% !important; height: auto !important; }
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
           </svg>
-          Export Daily to Excel
+          Export Daily
         </button>
       </div>
-    
       <div class="filters">
         <div><label>Month</label><select id="f-month"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="f-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
@@ -827,10 +715,7 @@ canvas { display: block; width: 100% !important; height: auto !important; }
       </div>
       <div class="card">
         <h3>Day-wise Sales</h3>
-        <p>All calendar days shown · days with no sales shown as ₹ 0</p>
-        <div class="canvas-container medium">
-          <canvas id="chart-daily"></canvas>
-        </div>
+        <div class="canvas-container medium"><canvas id="chart-daily"></canvas></div>
       </div>
     </div>
 
@@ -840,148 +725,143 @@ canvas { display: block; width: 100% !important; height: auto !important; }
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
           </svg>
-          Export Customer Overview
-        </button>
-        <button class="btn btn-success" onclick="exportToExcel('customer-daily')">
-          <svg viewBox="0 0 24 24" width="14" height="14">
-            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-          </svg>
-          Export Customer Daily
+          Export Overview
         </button>
       </div>
-
-      <!-- Customer Overview Section -->
       <div class="filters">
-        <div><label>Ranking</label><select id="fc-ranking"><option value="top10">Top 10 Customers</option><option value="bottom10">Bottom 10 Customers</option></select></div>
-        <div><label>Month</label><select id="fc-month-overview"><option value="all">All Months</option></select></div>
-        <div><label>Units</label><select id="fc-dept-overview"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
-        <div><label>Territory</label><select id="fc-territory-overview"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <div><label>Ranking</label><select id="fc-ranking"><option value="top10">Top 10 Customers</option><option value="top20">Top 20 Customers</option></select></div>
+        <div><label>Month</label><select id="fc-month"><option value="all">All Months</option></select></div>
+        <div><label>Units</label><select id="fc-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
+        <div><label>Territory</label><select id="fc-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
         <span id="customer-count"></span>
       </div>
       <div class="card">
-        <h3>Customer Sales Overview <span id="last-data-date" style="float:right;font-size:12px;font-weight:500;color:#64748b;"></span></h3>
-        <p>Total sales per customer for selected filters</p>
-        <div class="canvas-container">
-          <canvas id="chart-customer-overview"></canvas>
-        </div>
+        <h3>Customer Sales Overview</h3>
+        <div class="canvas-container"><canvas id="chart-customer-overview"></canvas></div>
       </div>
 
-      <!-- Customer Day-wise Section -->
-      <div class="filters">
+      <div class="filters" style="margin-top:20px">
+        <div><label>Select Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
         <div><label>Month</label><select id="fc-month-daily"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="fc-dept-daily"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
         <div><label>Territory</label><select id="fc-territory-daily"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
-        <div><label>Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
       </div>
       <div class="card">
         <h3>Customer Day-wise Sales</h3>
-        <p>Daily sales for selected customer · days with no sales shown as ₹ 0</p>
-        <div class="canvas-container medium">
-          <canvas id="chart-customer-daily"></canvas>
-        </div>
+        <div class="canvas-container medium"><canvas id="chart-customer-daily"></canvas></div>
       </div>
     </div>
   </div>
 </div>
+
 <script>
-  
-/* Global Config */
+/* ============================================
+   G-plast Sales Dashboard - Strict Column Mapping
+   
+   REQUIRED EXCEL COLUMNS (EXACT MATCH):
+   - Inv. Date     → Date
+   - Unit          → Department/Unit
+   - Territory     → Territory
+   - Benf. Name    → Customer Name
+   - Sale Amt.     → Amount
+   
+   NO OTHER COLUMN NAMES WILL WORK
+   ============================================ */
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DEPTS  = ['IMD','DCD','TRD','MED'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DEPTS = ['IMD', 'DCD', 'TRD', 'MED'];
 const DEPT_COLORS = { IMD: '#3b82f6', DCD: '#f59e0b', TRD: '#8b5cf6', MED: '#10b981' };
-const TER_COLORS  = { EXPORT: '#06b6d4', DOMESTIC: '#ef4444', GENERAL: '#f97316' };
-
-const GRID = '#e5e7eb'; 
+const TER_COLORS = { EXPORT: '#06b6d4', DOMESTIC: '#ef4444', GENERAL: '#f97316' };
+const GRID = '#e5e7eb';
 const AXIS_TEXT = '#475569';
-const TEXT = '#0f172a';
 
-/* Chart UI Defaults */
-
+/* Chart Helpers */
 const tooltipCfg = {
-  backgroundColor: '#ffffff', 
-  borderColor: '#e2e8f0', 
+  backgroundColor: '#ffffff',
+  borderColor: '#e2e8f0',
   borderWidth: 1,
-  titleColor: '#000000', 
+  titleColor: '#000000',
   bodyColor: '#000000',
-  titleFont: { family: 'Inter', weight: 'bold', style: 'normal', size: 14 },
-  bodyFont: { family: 'Inter', weight: 'bold', style: 'normal', size: 13 }, 
-  padding: 12, 
-  cornerRadius: 10,
-  displayColors: true,
-  boxWidth: 8,
-  boxHeight: 8,
-  boxPadding: 6,
+  titleFont: { family: 'Inter', weight: 'bold', size: 13 },
+  bodyFont: { family: 'Inter', weight: '500', size: 12 },
   callbacks: { label: (ctx) => ' ' + fmt(round2(ctx.parsed.y ?? ctx.parsed)) }
 };
 
-const axisCfg = { 
-  color: AXIS_TEXT, 
-  font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' } 
+const axisCfg = {
+  color: AXIS_TEXT,
+  font: { family: 'Inter', size: window.innerWidth < 600 ? 9 : 11, weight: '500' }
 };
 
 const scaleCfg = () => ({
-  x: { 
-    grid: { color: GRID, lineWidth: 1 }, 
-    ticks: axisCfg, 
-    border: { display: false } 
+  x: {
+    grid: { color: GRID, lineWidth: 0.5 },
+    ticks: { ...axisCfg, maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 15 },
+    border: { display: false }
   },
-  y: { 
-    grid: { color: GRID, lineWidth: 1 }, 
-    ticks: { ...axisCfg, callback: v => fmt(v) }, 
+  y: {
+    grid: { color: GRID, lineWidth: 0.5 },
+    ticks: { ...axisCfg, callback: v => fmt(v) },
     border: { display: false }
   }
 });
 
 const charts = {};
-const mkChart = (id, type, data, opts) => { 
-  if (charts[id]) charts[id].destroy(); 
-  charts[id] = new Chart(document.getElementById(id), { type, data, options: opts }); 
+const mkChart = (id, type, data, opts) => {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (ctx) charts[id] = new Chart(ctx, { type, data, options: opts });
 };
 
-/* Data Formatting Utilities */
-
+/* Data Formatting */
 const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
-const fmt = (v) => { 
-  v = round2(v); 
-  if (v >= 1e7) return (v/1e7).toFixed(2) + ' Cr'; 
-  if (v >= 1e5) return (v/1e5).toFixed(2) + ' L'; 
-  return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
+
+const fmt = (v) => {
+  v = round2(v);
+  if (v >= 1e7) return (v / 1e7).toFixed(2) + ' Cr';
+  if (v >= 1e5) return (v / 1e5).toFixed(2) + ' L';
+  return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
-/* Excel Key Matching */
-
-const getCol = (row, ...names) => { 
-  for (const k of Object.keys(row)) { 
-    const kl = k.toLowerCase().trim(); 
-    for (const n of names) { if (kl === n.toLowerCase()) return row[k]; } 
-  } 
-  return ''; 
+/* ========== STRICT COLUMN MAPPING - EXACT NAMES ONLY ========== */
+const getCol = (row, exactName) => {
+  for (const k of Object.keys(row)) {
+    if (k === exactName) return row[k];
+  }
+  return '';
 };
 
-const parseDate = (v) => { 
-  if (v instanceof Date) return isNaN(v) ? null : v; 
-  if (typeof v === 'number') { 
-    try { const d = XLSX.SSF.parse_date_code(v); return d ? new Date(d.y, d.m-1, d.d) : null; } catch(e) { return null; } 
-  } 
-  if (typeof v === 'string' && v.trim()) { 
-    const p = v.trim().split('.'); 
-    if (p.length === 3) { const d = new Date(+p[2], +p[1]-1, +p[0]); if (!isNaN(d)) return d; } 
-    const fb = new Date(v); if (!isNaN(fb)) return fb; 
-  } 
-  return null; 
+const parseDate = (v) => {
+  if (v instanceof Date) return isNaN(v) ? null : new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()));
+  if (typeof v === 'number') {
+    try {
+      const d = XLSX.SSF.parse_date_code(v);
+      if (d) return new Date(Date.UTC(d.y, d.m - 1, d.d));
+      return null;
+    } catch (e) { return null; }
+  }
+  if (typeof v === 'string' && v.trim()) {
+    const p = v.trim().split('.');
+    if (p.length === 3) {
+      const date = new Date(Date.UTC(+p[2], +p[1] - 1, +p[0]));
+      if (!isNaN(date)) return date;
+    }
+    const fb = new Date(v + 'T00:00:00Z');
+    return isNaN(fb) ? null : fb;
+  }
+  return null;
 };
 
-const normTerritory = (v) => { 
-  const s = String(v).toUpperCase().trim(); 
-  if (s === 'EXPORT' || s === 'EXP') return 'EXPORT'; 
-  if (s === 'DOMESTIC' || s === 'DOM') return 'DOMESTIC'; 
-  if (s === 'GENERAL' || s === 'GEN') return 'GENERAL'; 
-  return s; 
+const normTerritory = (v) => {
+  const s = String(v).toUpperCase().trim();
+  if (s === 'EXPORT' || s === 'EXP') return 'EXPORT';
+  if (s === 'DOMESTIC' || s === 'DOM') return 'DOMESTIC';
+  if (s === 'GENERAL' || s === 'GEN') return 'GENERAL';
+  return s;
 };
 
 const monthKey = (d) => MONTHS[d.getMonth()] + ' ' + d.getFullYear();
 
+/* Global State */
 let allRows = [];
 let totalExcelRows = 0;
 let currentMonthlyChartData = null;
@@ -989,141 +869,65 @@ let currentDailyChartData = null;
 let currentCustomerOverviewData = null;
 let currentCustomerDailyData = null;
 
-/* Main Parser */
-const parseExcel = (buf) => { 
-  const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true }); 
-  const ws = wb.Sheets[wb.SheetNames[0]]; 
+/* ========== EXCEL PARSER - STRICT COLUMN NAMES ========== */
+const parseExcel = (buf) => {
+  const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true });
+  const ws = wb.Sheets[wb.SheetNames[0]];
   const json = XLSX.utils.sheet_to_json(ws, { defval: '', blankrows: false });
   totalExcelRows = json.length;
-  
-  return json.map(row => {
-    const amountKeys = Object.keys(row).filter(key => {
-      const kl = key.toLowerCase().trim();
-      return kl === 'sale amt' || kl === 'sale amt.';
-    });
-    
-    let amount = 0;
-    if (amountKeys.length > 0) {
-      const lastKey = amountKeys[amountKeys.length - 1];
-      amount = round2(parseFloat(row[lastKey]) || 0);
-    }
-    
-    return { 
-      date: parseDate(getCol(row, 'inv. date', 'inv date', 'invoice date')), 
-      unit: String(getCol(row, 'unit', 'dept', 'department') || '').toUpperCase().trim(), 
-      territory: normTerritory(getCol(row, 'territory', 'teritory')), 
-      customer: String(getCol(row, 'benf. name', 'beneficiary name', 'customer') || '').trim(),
-      amt: amount, 
-    };
-  }).filter(r => r.date && r.unit && r.amt > 0); 
-};
 
-/* Export Functions */
-window.exportToExcel = (type) => {
-  const wb = XLSX.utils.book_new();
+  // Check if required columns exist
+  const sampleRow = json[0] || {};
+  const requiredCols = ['Inv. Date', 'Unit', 'Territory', 'Benf. Name', 'Sale Amt.'];
+  const missingCols = requiredCols.filter(col => !sampleRow.hasOwnProperty(col));
   
-  if (type === 'monthly') {
-    if (!currentMonthlyChartData) {
-      alert('Please wait for the charts to load before exporting.');
-      return;
-    }
-    
-    const monthlyArray = currentMonthlyChartData.labels.map((label, idx) => ({
-      Month: label,
-      IMD: currentMonthlyChartData.imd[idx],
-      DCD: currentMonthlyChartData.dcd[idx],
-      TRD: currentMonthlyChartData.trd[idx],
-      MED: currentMonthlyChartData.med[idx],
-      Total: currentMonthlyChartData.total[idx]
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(monthlyArray);
-    ws['!cols'] = [
-      { wch: 15 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
-    ];
-    
-    XLSX.utils.book_append_sheet(wb, ws, 'Monthly Sales');
-    
-  } else if (type === 'daily') {
-    if (!currentDailyChartData) {
-      alert('Please view the Day-wise tab first before exporting.');
-      return;
-    }
-    
-    const fMonth = document.getElementById('f-month').value;
-    const fDept = document.getElementById('f-dept').value;
-    const fTer = document.getElementById('f-territory').value;
-    
-    const dailyArray = currentDailyChartData.labels.map((label, idx) => ({
-      Date: label,
-      Amount: currentDailyChartData.data[idx],
-      Unit: fDept,
-      Territory: fTer
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(dailyArray);
-    ws['!cols'] = [
-      { wch: 18 }, { wch: 18 }, { wch: 12 }, { wch: 14 }
-    ];
-    
-    XLSX.utils.book_append_sheet(wb, ws, 'Daily Sales');
-    
-  } else if (type === 'customer-overview') {
-    if (!currentCustomerOverviewData) {
-      alert('Please view the Customer tab first before exporting.');
-      return;
-    }
-    
-    const customerArray = currentCustomerOverviewData.labels.map((label, idx) => ({
-      Customer: label,
-      'Total Sales': currentCustomerOverviewData.data[idx]
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(customerArray);
-    ws['!cols'] = [
-      { wch: 35 }, { wch: 20 }
-    ];
-    
-    XLSX.utils.book_append_sheet(wb, ws, 'Customer Overview');
-    
-  } else if (type === 'customer-daily') {
-    if (!currentCustomerDailyData) {
-      alert('Please select a customer in the day-wise section first.');
-      return;
-    }
-    
-    const customerDailyArray = currentCustomerDailyData.labels.map((label, idx) => ({
-      Date: label,
-      Amount: currentCustomerDailyData.data[idx],
-      Customer: document.getElementById('fc-customer').selectedOptions[0]?.text || ''
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(customerDailyArray);
-    ws['!cols'] = [
-      { wch: 18 }, { wch: 20 }, { wch: 35 }
-    ];
-    
-    XLSX.utils.book_append_sheet(wb, ws, 'Customer Daily Sales');
+  if (missingCols.length > 0) {
+    console.warn('Missing columns:', missingCols);
+    // Still try to parse with what's available
   }
-  
-  const filename = `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb, filename);
+
+  return json.map(row => {
+    // Get amount from 'Sale Amt.' column
+    let amount = 0;
+    const saleAmt = row['Sale Amt.'];
+    if (saleAmt !== undefined && saleAmt !== '') {
+      amount = round2(parseFloat(saleAmt) || 0);
+    }
+
+    // Get customer name from 'Benf. Name' column
+    let customer = row['Benf. Name'];
+    if (customer && typeof customer === 'string') {
+      customer = customer.trim();
+    } else if (customer) {
+      customer = String(customer).trim();
+    } else {
+      customer = '';
+    }
+
+    return {
+      date: parseDate(row['Inv. Date']),
+      unit: String(row['Unit'] || '').toUpperCase().trim(),
+      territory: normTerritory(row['Territory'] || ''),
+      customer: customer,
+      amt: amount,
+    };
+  }).filter(r => r.date && r.unit && r.amt > 0);
 };
 
-/* UI Update Logic */
+/* KPI Renderer */
 const renderKPI = (rows) => {
-  const grand = round2(rows.reduce((s,r) => s+r.amt, 0));
+  const grand = round2(rows.reduce((s, r) => s + r.amt, 0));
   const items = [
-    { label: 'Grand Total', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows · Total Excel: ' + totalExcelRows, key: 'grand' },
-    ...DEPTS.map(d => { 
-      const v = round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)); 
-      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v/grand*100).toFixed(1)+'% of total' : '—', key: d }; 
+    { label: 'Grand Total', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows · Excel: ' + totalExcelRows, key: 'grand' },
+    ...DEPTS.map(d => {
+      const v = round2(rows.filter(r => r.unit === d).reduce((s, r) => s + r.amt, 0));
+      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v / grand * 100).toFixed(1) + '%' : '—', key: d };
     }),
-    { label: 'Export',   val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0)),   color: TER_COLORS.EXPORT,   sub: 'Export sales', key: 'EXPORT' },
-    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
-    { label: 'General',  val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s,r) => s+r.amt, 0)),  color: TER_COLORS.GENERAL,  sub: 'General sales', key: 'GENERAL' },
+    { label: 'Export', val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.EXPORT, sub: 'Export sales', key: 'EXPORT' },
+    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
+    { label: 'General', val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.GENERAL, sub: 'General sales', key: 'GENERAL' },
   ];
-  document.getElementById('kpi-row').innerHTML = items.map(k => 
+  document.getElementById('kpi-row').innerHTML = items.map(k =>
     `<div class="kpi" data-kpi="${k.key}">
       <div class="label">${k.label}</div>
       <div class="val" style="color:${k.color}">${fmt(k.val)}</div>
@@ -1132,173 +936,113 @@ const renderKPI = (rows) => {
   ).join('');
 };
 
-/* Monthly Charts Logic */
+/* Monthly Charts */
 const renderMonthly = (rows) => {
   const map = {};
-  rows.forEach(({ date, unit, amt }) => { 
-    const mk = monthKey(date); 
-    if (!map[mk]) map[mk] = { _d: date, total: 0, IMD: 0, DCD: 0, TRD: 0, MED: 0 }; 
-    map[mk].total += amt; 
-    if (map[mk][unit] !== undefined) map[mk][unit] += amt; 
+  rows.forEach(({ date, unit, amt }) => {
+    const mk = monthKey(date);
+    if (!map[mk]) map[mk] = { _d: date, total: 0, IMD: 0, DCD: 0, TRD: 0, MED: 0 };
+    map[mk].total += amt;
+    if (map[mk][unit] !== undefined) map[mk][unit] += amt;
   });
-  
-  const sorted = Object.entries(map).sort((a,b) => a[1]._d - b[1]._d);
+
+  const sorted = Object.entries(map).sort((a, b) => a[1]._d - b[1]._d);
   const labels = sorted.map(([k]) => k);
-  
+
   currentMonthlyChartData = {
     labels: labels,
-    total: sorted.map(([,v]) => round2(v.total)),
-    imd: sorted.map(([,v]) => round2(v.IMD)),
-    dcd: sorted.map(([,v]) => round2(v.DCD)),
-    trd: sorted.map(([,v]) => round2(v.TRD)),
-    med: sorted.map(([,v]) => round2(v.MED))
+    total: sorted.map(([, v]) => round2(v.total)),
+    imd: sorted.map(([, v]) => round2(v.IMD)),
+    dcd: sorted.map(([, v]) => round2(v.DCD)),
+    trd: sorted.map(([, v]) => round2(v.TRD)),
+    med: sorted.map(([, v]) => round2(v.MED))
   };
 
-  mkChart('chart-monthly-total', 'bar', { 
-    labels, 
-    datasets: [{ 
-      data: currentMonthlyChartData.total, 
-      backgroundColor: '#3b82f6', 
-      borderRadius: 8, 
-      maxBarThickness: 48,
+  mkChart('chart-monthly-total', 'bar', {
+    labels,
+    datasets: [{
+      data: currentMonthlyChartData.total,
+      backgroundColor: '#3b82f6',
+      borderRadius: 8,
+      maxBarThickness: 50,
       hoverBackgroundColor: '#2563eb'
-    }] 
-  }, { 
-    responsive: true, 
-    maintainAspectRatio: true, 
-    plugins: { 
-      legend: { display: false }, 
-      tooltip: tooltipCfg 
-    }, 
-    scales: scaleCfg() 
+    }]
+  }, {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: tooltipCfg },
+    scales: scaleCfg()
   });
 
-  mkChart('chart-monthly-stack', 'bar', { 
-    labels, 
-    datasets: DEPTS.map((d,i) => ({ 
-      label: d, 
-      data: currentMonthlyChartData[d.toLowerCase()], 
-      backgroundColor: Object.values(DEPT_COLORS)[i], 
-      borderColor: '#ffffff', 
-      borderWidth: 1, 
-      borderRadius: i === 3 ? 6 : 0, 
-      maxBarThickness: 48 
-    })) 
-  }, { 
-    responsive: true, 
-    maintainAspectRatio: true, 
-    plugins: { 
-      legend: { 
-        display: true, 
-        labels: { 
-          color: AXIS_TEXT, 
-          font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' }, 
-          boxWidth: 10, 
-          boxHeight: 10, 
-          padding: 10,
-          usePointStyle: true,
-          pointStyle: 'circle'
-        } 
-      }, 
-      tooltip: tooltipCfg 
-    }, 
-    scales: { 
-      x: { ...scaleCfg().x, stacked: true }, 
-      y: { ...scaleCfg().y, stacked: true } 
-    } 
+  mkChart('chart-monthly-stack', 'bar', {
+    labels,
+    datasets: DEPTS.map((d, i) => ({
+      label: d,
+      data: currentMonthlyChartData[d.toLowerCase()],
+      backgroundColor: Object.values(DEPT_COLORS)[i] + 'cc',
+      borderColor: '#ffffff',
+      borderWidth: 1,
+      borderRadius: 4,
+      maxBarThickness: 50
+    }))
+  }, {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: true, position: 'top', labels: { color: AXIS_TEXT, font: { size: 11, weight: '500' }, boxWidth: 10, usePointStyle: true } },
+      tooltip: tooltipCfg
+    },
+    scales: { x: { ...scaleCfg().x, stacked: true }, y: { ...scaleCfg().y, stacked: true } }
   });
 
-  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)));
-  mkChart('chart-pie', 'doughnut', { 
-    labels: DEPTS, 
-    datasets: [{ 
-      data: pieTotals, 
-      backgroundColor: Object.values(DEPT_COLORS), 
-      borderColor: '#ffffff', 
-      borderWidth: 2, 
-      hoverOffset: 8 
-    }] 
-  }, { 
-    responsive: true, 
-    maintainAspectRatio: true, 
-    cutout: '65%', 
-    plugins: { 
-      tooltip: tooltipCfg, 
-      legend: { 
-        position: 'bottom', 
-        labels: { 
-          color: AXIS_TEXT, 
-          font: { family: 'Inter', size: window.innerWidth < 600 ? 10 : 12, weight: '500' }, 
-          boxWidth: 10, 
-          padding: 10,
-          usePointStyle: true,
-          pointStyle: 'circle'
-        } 
-      } 
-    } 
+  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s, r) => s + r.amt, 0)));
+  mkChart('chart-pie', 'doughnut', {
+    labels: DEPTS,
+    datasets: [{ data: pieTotals, backgroundColor: Object.values(DEPT_COLORS), borderColor: '#ffffff', borderWidth: 2, hoverOffset: 10 }]
+  }, {
+    responsive: true, maintainAspectRatio: true, cutout: '60%',
+    plugins: { tooltip: tooltipCfg, legend: { position: 'bottom', labels: { color: AXIS_TEXT, font: { size: 11, weight: '500' }, usePointStyle: true } } }
   });
 };
 
-/* Daily Chart Logic */
+/* Daily Chart */
 const renderDaily = () => {
   const fMonth = document.getElementById('f-month').value;
-  const fDept  = document.getElementById('f-dept').value;
-  const fTer   = document.getElementById('f-territory').value;
+  const fDept = document.getElementById('f-dept').value;
+  const fTer = document.getElementById('f-territory').value;
   if (!fMonth) return;
 
-  const filtered = allRows.filter(r => 
-    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
-    (fDept === 'all' || r.unit === fDept) && 
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
     (fTer === 'all' || r.territory === fTer)
   );
 
   const dayMap = {};
-  
+
   if (fMonth === 'all') {
-    filtered.forEach(({ date, amt }) => { 
-      const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); 
-      dayMap[dk] = round2((dayMap[dk] || 0) + amt); 
+    filtered.forEach(({ date, amt }) => {
+      const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      dayMap[dk] = round2((dayMap[dk] || 0) + amt);
     });
-    
-    const allDates = Object.keys(dayMap).sort((a,b) => {
-      const parseDateStr = (str) => {
-        const parts = str.split(' '); 
-        const day = parseInt(parts[0]);
-        const monthIndex = MONTHS.indexOf(parts[1]); 
-        const year = parseInt(parts[2]);
-        return new Date(year, monthIndex, day);
-      };
-      return parseDateStr(a) - parseDateStr(b);
+
+    const allDates = Object.keys(dayMap).sort((a, b) => {
+      const partsA = a.split(' ');
+      const partsB = b.split(' ');
+      const dateA = new Date(parseInt(partsA[2]), MONTHS.indexOf(partsA[1]), parseInt(partsA[0]));
+      const dateB = new Date(parseInt(partsB[2]), MONTHS.indexOf(partsB[1]), parseInt(partsB[0]));
+      return dateA - dateB;
     });
-    
+
     const data = allDates.map(d => dayMap[d]);
-    
-    currentDailyChartData = {
+    currentDailyChartData = { labels: allDates, data: data };
+    const salesDays = data.filter(v => v > 0).length;
+    document.getElementById('day-count').textContent = `${salesDays} days with sales · ${allDates.length - salesDays} days ₹0`;
+
+    mkChart('chart-daily', 'bar', {
       labels: allDates,
-      data: data
-    };
-    
-    document.getElementById('day-count').textContent = data.filter(v => v > 0).length + ' days with sales';
-    mkChart('chart-daily', 'bar', { 
-      labels: allDates, 
-      datasets: [{ 
-        label: 'Sales', 
-        data, 
-        backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'), 
-        borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'), 
-        borderWidth: 1, 
-        borderRadius: 4, 
-        maxBarThickness: 36 
-      }] 
-    }, { 
-      responsive: true, 
-      maintainAspectRatio: true, 
-      plugins: { 
-        legend: { display: false }, 
-        tooltip: tooltipCfg 
-      }, 
-      scales: scaleCfg() 
-    });
+      datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
+    }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
     return;
   }
 
@@ -1306,110 +1050,88 @@ const renderDaily = () => {
   const monthIndex = MONTHS.indexOf(mon);
   const year = +yr;
   const totalDays = new Date(year, monthIndex + 1, 0).getDate();
-  
-  filtered.forEach(({ date, amt }) => { 
-    const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); 
-    dayMap[dk] = round2((dayMap[dk] || 0) + amt); 
+
+  filtered.forEach(({ date, amt }) => {
+    const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    dayMap[dk] = round2((dayMap[dk] || 0) + amt);
   });
-  
+
   const labels = [], data = [];
-  for (let d = 1; d <= totalDays; d++) { 
-    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
-    labels.push(fullDate); 
-    data.push(dayMap[fullDate] || 0); 
+  for (let d = 1; d <= totalDays; d++) {
+    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    labels.push(fullDate);
+    data.push(dayMap[fullDate] || 0);
   }
-  
-  currentDailyChartData = {
-    labels: labels,
-    data: data
-  };
-  
+
+  currentDailyChartData = { labels: labels, data: data };
   const salesDays = data.filter(v => v > 0).length;
   document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0`;
 
-  mkChart('chart-daily', 'bar', { 
-    labels, 
-    datasets: [{ 
-      label: 'Sales', 
-      data, 
-      backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'), 
-      borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'), 
-      borderWidth: 1, 
-      borderRadius: 4, 
-      maxBarThickness: 36 
-    }] 
-  }, { 
-    responsive: true, 
-    maintainAspectRatio: true, 
-    plugins: { 
-      legend: { display: false }, 
-      tooltip: tooltipCfg 
-    }, 
-    scales: scaleCfg() 
-  });
+  mkChart('chart-daily', 'bar', {
+    labels,
+    datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
+  }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
 };
 
-/* Customer Overview Chart */
+/* Customer Overview - FULL NAMES, NO TRUNCATION */
 const renderCustomerOverview = () => {
   const fRanking = document.getElementById('fc-ranking').value;
-  const fMonth = document.getElementById('fc-month-overview').value;
-  const fDept = document.getElementById('fc-dept-overview').value;
-  const fTer = document.getElementById('fc-territory-overview').value;
+  const fMonth = document.getElementById('fc-month').value;
+  const fDept = document.getElementById('fc-dept').value;
+  const fTer = document.getElementById('fc-territory').value;
 
-  const filtered = allRows.filter(r => 
-    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
-    (fDept === 'all' || r.unit === fDept) && 
-    (fTer === 'all' || r.territory === fTer) &&
-    r.customer
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
+    (fTer === 'all' || r.territory === fTer)
   );
 
-  // Get last date from filtered data
-  if (filtered.length > 0) {
-    const lastDate = filtered.reduce((max, r) => r.date > max ? r.date : max, filtered[0].date);
-    document.getElementById('last-data-date').textContent = 
-      'Data as of: ' + lastDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  }
-
-  const customerMap = {};
-  filtered.forEach(({ customer, amt }) => {
-    customerMap[customer] = round2((customerMap[customer] || 0) + amt);
+  const customerMap = new Map();
+  filtered.forEach(row => {
+    if (!row.customer || row.customer === '') return;
+    const existing = customerMap.get(row.customer) || 0;
+    customerMap.set(row.customer, existing + row.amt);
   });
 
-  let sorted = Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
-  
-  // Apply Top 10 or Bottom 10 filter
-  if (fRanking === 'top10') {
-    sorted = sorted.slice(0, 10);
-  } else if (fRanking === 'bottom10') {
-    sorted = sorted.slice(-10).reverse();
-  }
+  let customers = Array.from(customerMap.entries())
+    .map(([name, total]) => ({ name: name, total: round2(total) }))
+    .filter(c => c.total > 0)
+    .sort((a, b) => b.total - a.total);
 
-  const labels = sorted.map(([name]) => name);
-  const data = sorted.map(([, amt]) => amt);
+  const limit = fRanking === 'top10' ? 10 : 20;
+  customers = customers.slice(0, limit);
 
-  currentCustomerOverviewData = { labels, data };
+  currentCustomerOverviewData = customers;
 
-  const rankingText = fRanking === 'top10' ? 'Top 10' : 'Bottom 10';
-  document.getElementById('customer-count').textContent = 
-    `Showing ${rankingText} customers · Total: ${Object.keys(customerMap).length} customers`;
+  const labels = customers.map(c => c.name);
+  const data = customers.map(c => c.total);
+
+  document.getElementById('customer-count').textContent =
+    `Showing Top ${limit} customers · Total unique: ${customerMap.size}`;
 
   mkChart('chart-customer-overview', 'bar', {
     labels,
     datasets: [{
-      label: 'Sales',
+      label: 'Total Sales',
       data,
       backgroundColor: '#3b82f680',
       borderColor: '#3b82f6',
       borderWidth: 1,
       borderRadius: 6,
-      maxBarThickness: 48
+      maxBarThickness: 50
     }]
   }, {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
       legend: { display: false },
-      tooltip: tooltipCfg
+      tooltip: {
+        ...tooltipCfg,
+        callbacks: {
+          title: (ctx) => ctx[0].label,
+          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.y)
+        }
+      }
     },
     scales: {
       x: {
@@ -1417,7 +1139,9 @@ const renderCustomerOverview = () => {
         ticks: {
           ...axisCfg,
           maxRotation: 45,
-          minRotation: 45
+          minRotation: 45,
+          autoSkip: true,
+          maxTicksLimit: 15
         }
       },
       y: scaleCfg().y
@@ -1425,24 +1149,21 @@ const renderCustomerOverview = () => {
   });
 };
 
-/* Customer Daily Chart */
+/* Customer Daily */
 const renderCustomerDaily = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
   const fTer = document.getElementById('fc-territory-daily').value;
   const fCustomer = document.getElementById('fc-customer').value;
 
-  if (!fMonth || !fCustomer) {
-    if (charts['chart-customer-daily']) {
-      charts['chart-customer-daily'].destroy();
-      delete charts['chart-customer-daily'];
-    }
+  if (!fCustomer) {
+    if (charts['chart-customer-daily']) charts['chart-customer-daily'].destroy();
     return;
   }
 
-  const filtered = allRows.filter(r => 
-    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
-    (fDept === 'all' || r.unit === fDept) && 
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
     (fTer === 'all' || r.territory === fTer) &&
     r.customer === fCustomer
   );
@@ -1451,43 +1172,36 @@ const renderCustomerDaily = () => {
 
   if (fMonth === 'all') {
     filtered.forEach(({ date, amt }) => {
-      const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       dayMap[dk] = round2((dayMap[dk] || 0) + amt);
     });
 
-    const allDates = Object.keys(dayMap).sort((a,b) => {
-      const parseDateStr = (str) => {
-        const parts = str.split(' ');
-        const day = parseInt(parts[0]);
-        const monthIndex = MONTHS.indexOf(parts[1]);
-        const year = parseInt(parts[2]);
-        return new Date(year, monthIndex, day);
-      };
-      return parseDateStr(a) - parseDateStr(b);
+    const allDates = Object.keys(dayMap).sort((a, b) => {
+      const partsA = a.split(' ');
+      const partsB = b.split(' ');
+      const dateA = new Date(parseInt(partsA[2]), MONTHS.indexOf(partsA[1]), parseInt(partsA[0]));
+      const dateB = new Date(parseInt(partsB[2]), MONTHS.indexOf(partsB[1]), parseInt(partsB[0]));
+      return dateA - dateB;
     });
 
-    const data = allDates.map(d => dayMap[d]);
-
+    const data = allDates.map(d => dayMap[d] || 0);
     currentCustomerDailyData = { labels: allDates, data };
 
     mkChart('chart-customer-daily', 'bar', {
       labels: allDates,
       datasets: [{
-        label: 'Sales',
+        label: fCustomer,
         data,
         backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'),
         borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'),
         borderWidth: 1,
         borderRadius: 4,
-        maxBarThickness: 36
+        maxBarThickness: 40
       }]
     }, {
       responsive: true,
       maintainAspectRatio: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: tooltipCfg
-      },
+      plugins: { legend: { display: false }, tooltip: tooltipCfg },
       scales: scaleCfg()
     });
     return;
@@ -1499,13 +1213,13 @@ const renderCustomerDaily = () => {
   const totalDays = new Date(year, monthIndex + 1, 0).getDate();
 
   filtered.forEach(({ date, amt }) => {
-    const dk = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     dayMap[dk] = round2((dayMap[dk] || 0) + amt);
   });
 
   const labels = [], data = [];
   for (let d = 1; d <= totalDays; d++) {
-    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     labels.push(fullDate);
     data.push(dayMap[fullDate] || 0);
   }
@@ -1515,128 +1229,124 @@ const renderCustomerDaily = () => {
   mkChart('chart-customer-daily', 'bar', {
     labels,
     datasets: [{
-      label: 'Sales',
+      label: fCustomer,
       data,
       backgroundColor: data.map(v => v > 0 ? '#3b82f680' : '#e5e7eb'),
       borderColor: data.map(v => v > 0 ? '#3b82f6' : '#cbd5e1'),
       borderWidth: 1,
       borderRadius: 4,
-      maxBarThickness: 36
+      maxBarThickness: 40
     }]
   }, {
     responsive: true,
     maintainAspectRatio: true,
-    plugins: {
-      legend: { display: false },
-      tooltip: tooltipCfg
-    },
+    plugins: { legend: { display: false }, tooltip: tooltipCfg },
     scales: scaleCfg()
   });
 };
 
-/* Populate Customer Dropdown */
+/* Populate Customer Dropdown - EXACT NAMES */
 const populateCustomerDropdown = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
   const fTer = document.getElementById('fc-territory-daily').value;
 
-  const filtered = allRows.filter(r => 
-    (fMonth === 'all' || monthKey(r.date) === fMonth) && 
-    (fDept === 'all' || r.unit === fDept) && 
-    (fTer === 'all' || r.territory === fTer) &&
-    r.customer
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
+    (fTer === 'all' || r.territory === fTer)
   );
 
-  const customers = [...new Set(filtered.map(r => r.customer))].sort();
+  const customers = [...new Set(filtered.map(r => r.customer).filter(c => c && c !== ''))].sort();
+
   const sel = document.getElementById('fc-customer');
-  sel.innerHTML = '<option value="">Select Customer</option>' + 
-    customers.map(c => `<option value="${c}">${c}</option>`).join('');
+  sel.innerHTML = '<option value="">-- Select Customer (' + customers.length + ') --</option>' +
+    customers.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
 };
 
-/* Component Population */
-
+/* Populate Months */
 const populateMonths = (rows) => {
   const seen = new Set();
   rows.forEach(r => seen.add(monthKey(r.date)));
-  const sorted = [...seen].sort((a,b) => { 
-    const toMs = s => { const [m,y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); }; 
-    return toMs(a) - toMs(b); 
+  const sorted = [...seen].sort((a, b) => {
+    const toMs = s => { const [m, y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); };
+    return toMs(a) - toMs(b);
   });
-  
   const monthsHTML = '<option value="all">All Months</option>' + sorted.map(m => `<option value="${m}">${m}</option>`).join('');
-  
+
   document.getElementById('f-month').innerHTML = monthsHTML;
-  document.getElementById('fc-month-overview').innerHTML = monthsHTML;
+  document.getElementById('fc-month').innerHTML = monthsHTML;
   document.getElementById('fc-month-daily').innerHTML = monthsHTML;
-  
+
   document.getElementById('f-month').value = 'all';
-  document.getElementById('fc-month-overview').value = 'all';
+  document.getElementById('fc-month').value = 'all';
   document.getElementById('fc-month-daily').value = 'all';
 };
 
-/* Event Listeners */
+/* Export Functions */
+window.exportToExcel = (type) => {
+  const wb = XLSX.utils.book_new();
 
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.dataset.tab;
-    document.getElementById('tab-monthly').style.display = tab === 'monthly' ? '' : 'none';
-    document.getElementById('tab-daily').style.display = tab === 'daily' ? '' : 'none';
-    document.getElementById('tab-customer').style.display = tab === 'customer' ? '' : 'none';
-    
-    if (tab === 'daily') renderDaily();
-    if (tab === 'customer') {
-      renderCustomerOverview();
-      populateCustomerDropdown();
-    }
-  });
-});
+  if (type === 'monthly' && currentMonthlyChartData) {
+    const monthlyArray = currentMonthlyChartData.labels.map((label, idx) => ({
+      Month: label,
+      IMD: currentMonthlyChartData.imd[idx],
+      DCD: currentMonthlyChartData.dcd[idx],
+      TRD: currentMonthlyChartData.trd[idx],
+      MED: currentMonthlyChartData.med[idx],
+      Total: currentMonthlyChartData.total[idx]
+    }));
+    const ws = XLSX.utils.json_to_sheet(monthlyArray);
+    XLSX.utils.book_append_sheet(wb, ws, 'Monthly Sales');
+  } else if (type === 'daily' && currentDailyChartData) {
+    const dailyArray = currentDailyChartData.labels.map((label, idx) => ({
+      Date: label,
+      Amount: currentDailyChartData.data[idx]
+    }));
+    const ws = XLSX.utils.json_to_sheet(dailyArray);
+    XLSX.utils.book_append_sheet(wb, ws, 'Daily Sales');
+  } else if (type === 'customer-overview' && currentCustomerOverviewData) {
+    const overviewArray = currentCustomerOverviewData.map(c => ({
+      'Customer Name': c.name,
+      'Total Sales (₹)': c.total
+    }));
+    const ws = XLSX.utils.json_to_sheet(overviewArray);
+    XLSX.utils.book_append_sheet(wb, ws, 'Customer Overview');
+  } else {
+    alert('No data to export');
+    return;
+  }
 
-['f-month','f-dept','f-territory'].forEach(id => 
-  document.getElementById(id).addEventListener('change', renderDaily)
-);
+  XLSX.writeFile(wb, `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
 
-['fc-ranking','fc-month-overview','fc-dept-overview','fc-territory-overview'].forEach(id => 
-  document.getElementById(id).addEventListener('change', renderCustomerOverview)
-);
-
-['fc-month-daily','fc-dept-daily','fc-territory-daily'].forEach(id => 
-  document.getElementById(id).addEventListener('change', () => {
-    populateCustomerDropdown();
-    renderCustomerDaily();
-  })
-);
-
-document.getElementById('fc-customer').addEventListener('change', renderCustomerDaily);
-
-/* Refresh Utility */
-
+/* Manual Refresh */
 window.manualRefresh = () => {
   const loader = document.getElementById('loader');
   loader.style.display = 'flex';
   loader.classList.remove('hide');
-  
+
   fetch('data.xlsx?' + Date.now())
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
       if (!allRows.length) throw new Error('No valid rows found');
-      
+
       document.getElementById('meta').textContent = allRows.length.toLocaleString() + ' valid rows · Total Excel rows: ' + totalExcelRows;
       document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
-      
+
       renderKPI(allRows);
       renderMonthly(allRows);
       populateMonths(allRows);
-      
+      populateCustomerDropdown();
+
       const activeTab = document.querySelector('.tab.active').dataset.tab;
       if (activeTab === 'daily') renderDaily();
       if (activeTab === 'customer') {
         renderCustomerOverview();
-        populateCustomerDropdown();
+        renderCustomerDaily();
       }
-      
+
       loader.classList.add('hide');
       setTimeout(() => loader.style.display = 'none', 500);
     })
@@ -1648,26 +1358,65 @@ window.manualRefresh = () => {
     });
 };
 
-/* Initialization */
+/* Event Listeners */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tab-monthly').style.display = tab === 'monthly' ? 'block' : 'none';
+    document.getElementById('tab-daily').style.display = tab === 'daily' ? 'block' : 'none';
+    document.getElementById('tab-customer').style.display = tab === 'customer' ? 'block' : 'none';
 
+    if (tab === 'daily') renderDaily();
+    if (tab === 'customer') {
+      renderCustomerOverview();
+      renderCustomerDaily();
+    }
+  });
+});
+
+// Daily filters
+['f-month', 'f-dept', 'f-territory'].forEach(id =>
+  document.getElementById(id)?.addEventListener('change', renderDaily)
+);
+
+// Customer overview filters
+['fc-ranking', 'fc-month', 'fc-dept', 'fc-territory'].forEach(id =>
+  document.getElementById(id)?.addEventListener('change', renderCustomerOverview)
+);
+
+// Customer daily filters
+['fc-month-daily', 'fc-dept-daily', 'fc-territory-daily'].forEach(id =>
+  document.getElementById(id)?.addEventListener('change', () => {
+    populateCustomerDropdown();
+    renderCustomerDaily();
+  })
+);
+
+document.getElementById('fc-customer')?.addEventListener('change', renderCustomerDaily);
+
+/* Initial Load */
 const loadData = () => {
   fetch('data.xlsx?' + Date.now())
-    .then(r => { if (!r.ok) throw new Error('data.xlsx not found — make sure both files are in the same folder and open via Live Server'); return r.arrayBuffer(); })
+    .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
-      if (!allRows.length) throw new Error('No valid rows found. Check column names: Inv. Date, Unit, Territory, Benf. Name, Sale Amt');
-      
+      if (!allRows.length) throw new Error('No valid rows found');
+
       const loader = document.getElementById('loader');
       loader.classList.add('hide');
       setTimeout(() => loader.style.display = 'none', 500);
-      
-      document.getElementById('app').style.display = '';
+
+      document.getElementById('app').style.display = 'block';
       document.getElementById('meta').textContent = allRows.length.toLocaleString() + ' valid rows · Total Excel rows: ' + totalExcelRows;
       document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
-      
+
       renderKPI(allRows);
       renderMonthly(allRows);
       populateMonths(allRows);
+      populateCustomerDropdown();
+      renderCustomerOverview();
     })
     .catch(err => {
       document.getElementById('loader').style.display = 'none';
@@ -1676,18 +1425,8 @@ const loadData = () => {
       box.querySelector('p').textContent = err.message;
     });
 };
-loadData();
 
-document.querySelectorAll('.tab').forEach(button => {
-  button.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    button.classList.add('active');
-    const content = document.getElementById('content');
-    content.style.animation = 'none';
-    content.offsetHeight; 
-    content.style.animation = 'contentFadeUp 0.5s ease-out';
-  });
-});
+loadData();
 </script>
 </body>
 </html>
