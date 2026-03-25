@@ -54,115 +54,55 @@ body {
   overflow-x: hidden;
   width: 100%;
   -webkit-font-smoothing: antialiased;
-}
-
-#loader {
+}/* Fullscreen Loader Container */
+#loader-lightning {
   position: fixed;
-  inset: 0;
+  inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0 */
   background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
+  align-items: center;   /* horizontal center */
+  justify-content: center; /* vertical center */
+  gap: 24px;
   z-index: 999;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s ease;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
-#loader.hide {
+#loader-lightning.hide {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
-/* Loader  */
-.loader-container {
-  position: relative;
-  width: 140px;
-  height: 140px;
+/* Lightning Bars */
+.loader-lightning {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 6px;
 }
 
-/* Ring Spin */
-.loader-ring {
-  position: absolute;
-  border-radius: 50%;
-  animation: ringRotate 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.loader-lightning span {
+  width: 6px;
+  height: 30px;
+  background: var(--accent, #3b82f6);
+  animation: lightning 0.8s infinite;
 }
 
-.loader-ring-1 {
-  width: 110px;
-  height: 110px;
-  border: 3px solid transparent;
-  border-top-color: var(--accent);
-  border-right-color: var(--accent);
-  animation-duration: 1.2s;
-}
+.loader-lightning span:nth-child(2) { animation-delay: 0.2s; background: #f59e0b; }
+.loader-lightning span:nth-child(3) { animation-delay: 0.4s; background: #10b981; }
+.loader-lightning span:nth-child(4) { animation-delay: 0.6s; background: #8b5cf6; }
 
-.loader-ring-2 {
-  width: 85px;
-  height: 85px;
-  border: 3px solid transparent;
-  border-bottom-color: #f59e0b;
-  border-left-color: #f59e0b;
-  animation-duration: 1.5s;
-  animation-direction: reverse;
-}
-
-.loader-ring-3 {
-  width: 60px;
-  height: 60px;
-  border: 3px solid transparent;
-  border-top-color: #10b981;
-  border-right-color: #10b981;
-  animation-duration: 1s;
-}
-
-.loader-ring-4 {
-  width: 35px;
-  height: 35px;
-  border: 3px solid transparent;
-  border-bottom-color: #8b5cf6;
-  border-left-color: #8b5cf6;
-  animation-duration: 1.8s;
-  animation-direction: reverse;
-}
-
-@keyframes ringRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Loader Logo */
-.loader-logo {
-  position: absolute;
-  width: 45px;
-  height: 45px;
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  border-radius: 50%;
-  animation: logoPulse 1.4s ease-in-out infinite, logoFloat 2s ease-in-out infinite;
-  box-shadow: 0 0 30px rgba(59,130,246,0.5);
-}
-
-@keyframes logoPulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.12); opacity: 1; }
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+@keyframes lightning {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  50% { transform: scaleY(1.2); opacity: 1; }
 }
 
 /* Loader Text */
 .loader-text {
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  background: linear-gradient(90deg, var(--accent), #f59e0b, #10b981, var(--accent));
+  background: linear-gradient(90deg, var(--accent, #3b82f6), #f59e0b, #10b981, #8b5cf6);
   background-size: 300% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -175,74 +115,6 @@ body {
   100% { background-position: 300% center; }
 }
 
-/* Progress */
-.loader-progress {
-  width: 260px;
-  height: 4px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-
-.loader-progress-bar {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), #f59e0b, #10b981);
-  border-radius: 4px;
-  animation: progressFill 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  position: relative;
-}
-
-/* Shimmer */
-.loader-progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 1s ease-in-out infinite;
-}
-
-@keyframes progressFill {
-  0% { width: 0%; }
-  25% { width: 35%; }
-  50% { width: 65%; }
-  75% { width: 85%; }
-  100% { width: 100%; }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Dots */
-.loader-dots {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.loader-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-  border-radius: 50%;
-  animation: dotBounce 1s ease-in-out infinite;
-}
-
-.loader-dot:nth-child(1) { animation-delay: 0s; background: var(--accent); }
-.loader-dot:nth-child(2) { animation-delay: 0.15s; background: #f59e0b; }
-.loader-dot:nth-child(3) { animation-delay: 0.3s; background: #10b981; }
-.loader-dot:nth-child(4) { animation-delay: 0.45s; background: #8b5cf6; }
-
-@keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
-  40% { transform: scale(1.2); opacity: 1; }
-}
 
 #error {
   display: none;
@@ -772,26 +644,15 @@ header h1:hover { opacity: 0.8; }
 </style>
 </head>
 <body>
-  
-<div id="loader">
-  <div class="loader-container">
-    <div class="loader-ring loader-ring-1"></div>
-    <div class="loader-ring loader-ring-2"></div>
-    <div class="loader-ring loader-ring-3"></div>
-    <div class="loader-ring loader-ring-4"></div>
-    <div class="loader-logo"></div>
+ <div id="loader">
+<div id="loader-lightning">
+  <div class="loader-lightning">
+    <span></span><span></span><span></span><span></span>
   </div>
-  <div class="loader-text">G-plast Dashboard</div>
-  <div class="loader-progress">
-    <div class="loader-progress-bar"></div>
-  </div>
-  <div class="loader-dots">
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-  </div>
+  <div class="loader-text">Loading the Dashboard ....</div>
 </div>
+</div>
+<!-- error  -->
 <div id="error">
   <h2>⚠️ Could not load data file</h2>
   <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file</p>
