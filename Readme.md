@@ -1,163 +1,191 @@
 # G-plast Sales Dashboard
 
-## 📁 File Names
+A comprehensive, interactive sales analytics dashboard for G-plast, providing real-time insights into sales performance across multiple units, territories, and customers.
 
-- **Dashboard file:** `dashboard.html` (or any name you prefer)
-- **Data file:** `data.xlsx` (MUST be exactly this name)
+## 📊 Features
 
-## 📁 Tech stack
+### 1. **Monthly Overview**
+- Combined monthly sales chart for all units
+- Stacked bar chart showing sales breakdown by department (IMD, DCD, TRD, MED)
+- Department share doughnut chart
+- Export monthly data to Excel
 
-        - HTML
-        - CSS
-        - JavaScript
-        - SheetJS (for Excel file reading)
-        - Chart.js (for data visualization)
-        - React.js (for dashboard components)
-        - FMR Currency (for currency conversion)
+### 2. **Day-wise Sales**
+- Daily sales bar chart with all dates displayed (no gaps)
+- Filter by:
+  - Month (all months or specific month)
+  - Unit (IMD, DCD, TRD, MED)
+  - Territory (Export, Domestic, General)
+- Shows sales statistics (days with sales, total amount)
+- Export daily data to Excel
 
-        
-## 📁 Folder Structure
+### 3. **Customer Analysis**
+- **Top Customers Horizontal Bar Chart** (Top 10 or Top 20 based on selection)
+- **Bottom 10 Customers Horizontal Bar Chart** (lowest performing customers)
+- **Customer Sales Overview Vertical Bar Chart** (Top 10 or Top 20)
+- **Customer Day-wise Sales** (specific customer sales over time)
+- Export options for:
+  - Top customers (10,20 ranking selection)
+  - Bottom 10 customers
+  - Selected customer's daily sales
 
-your-project-folder/
-│
-├── dashboard.html # The main dashboard file
-├── data.xlsx # Your sales data (EXACT name)
-└── README.md # This file
+### 4. **KPI Cards**
+Quick overview of key metrics:
+- Grand Total Sales
+- Department-wise totals (IMD, DCD, TRD, MED)
+- Territory-wise totals (Export, Domestic, General)
+- Percentage contribution of each department
 
-## 📊 Supported Column Names
+## 🚀 Getting Started
 
-The Excel file MUST have these columns (spelling matters):
+### Prerequisites
+- A modern web browser (Chrome, Firefox, Safari, Edge)
+- Excel file named `data.xlsx` in the same directory as the HTML file
 
-### ✅ Required Columns:
+### Installation
 
-| Data Needed   | Accepts These Column Names                            |
-| ------------- | ----------------------------------------------------- |
-| **Date**      | `Inv. Date` , `Inv Date` , `Invoice Date`             |
-| **Unit**      | `Unit` , `Dept` , `Department`                        |
-| **Territory** | `Territory` , `Teritory`                              |
-| **Amount**    | `Total Amt` , `TotalAmt` (last column with this name) |
+1. **Download the Dashboard**
+   - Save the HTML file as `index.html`
 
-### ✅ Your Excel Should Have:
+2. **Prepare Your Data**
+   - Ensure your Excel file is named `data.xlsx`
+   - Place it in the same folder as the HTML file
 
-- `Inv. Date` ✓
-- `Unit` ✓
-- `Territory` ✓
-- `Total Amt` (at the end) ✓
+3. **Excel File Format**
+   Required columns in your Excel file:
+   - `Inv. Date` - Invoice date (DD.MM.YYYY or date format)
+   - `Unit` - Department/Unit name (IMD, DCD, TRD, MED) // hardcoded
+   - `Territory` - Territory (EXPORT, DOMESTIC, GENERAL)
+   - `Sale Amt.` or `Sale Amt` - Sales amount
+   - `Benf. Name` or `Benf Name`
 
-## 🚀 How to Use
+4. **Open the Dashboard**
+   - Double-click the HTML file or open it in your browser
+   - The dashboard will automatically load and parse `data.xlsx`
 
-### 1️⃣ Setup Files
-
-1. Place `dashboard.html` and `data.xlsx` in the **same folder**
-2. Make sure your Excel file is named exactly `data.xlsx`
-
-### 2️⃣ Open Dashboard
-
-**Option A: Using Live Server (Recommended)**
-
-- Install "Live Server" extension in VS Code
-- Right-click on `dashboard.html` → "Open with Live Server"
-
+## 📁 File Structure
+```
+project-folder/
+├── index.html          # Main dashboard file
+└── data.xlsx              # Your sales data file
 ```
 
-### 3️⃣ View Dashboard
-- Dashboard will load automatically
-- Click **"Refresh Data"** button to reload data
-- Switch between **Monthly** and **Day-wise** tabs
+## 🎨 Dashboard Sections
 
-## 📥 Export Features
+### Header Section
+- Dashboard title with click-to-reset functionality
+- Data statistics (valid rows count)
+- Last updated timestamp
+- Manual refresh button
 
-### Excel Export
-- **Monthly Tab:** Click "Export Monthly to Excel"
-  - Exports: Month, IMD, DCD, TRD, MED, Total
-- **Daily Tab:** Click "Export Daily to Excel"
-  - Exports: Date, Amount, Unit, Territory (with current filters applied)
+### Tabs Navigation
+- **Monthly Overview** - Monthly aggregated data
+- **Day-wise** - Daily sales with filters
+- **Customer Analysis** - Detailed customer insights
 
-## 📊 Dashboard Features
 
-### KPI Cards
-- Grand Total (all sales)
-- IMD, DCD, TRD, MED breakdown
-- Export, Domestic, General sales
+## 🔧 Technologies Used
 
-### Monthly Overview Tab
-- Combined monthly sales chart
-- Stacked chart by units
-- Department share (pie chart)
+- **HTML5** - Structure
+- **CSS3** - Styling with CSS variables and responsive design
+- **JavaScript** - Core functionality
+- **Chart.js 4.4.1** - Data visualization
+- **SheetJS (XLSX) 0.18.5** - Excel file parsing
+- **Google Fonts (Inter)** - Typography
 
-### Day-wise Tab
-- Filter by: Month, Unit, Territory
-- Shows full dates (e.g., "01 Jan 2024")
-- Days with ₹0 sales shown in gray
+## 📱 Responsive Design
 
-## ⚠️ Important Notes
+The dashboard is fully responsive and optimized for:
+- Desktop (1400px+)
+- Laptop (900px - 1400px)
+- Tablet (600px - 900px)
+- Mobile (< 600px)
+- Small mobile (< 380px)
 
-### File Requirements
-- **File name:** MUST be `data.xlsx` (case-sensitive)
-- **File location:** Same folder as dashboard.html
-- **DO NOT:** Double-click HTML file (use Live Server instead)
+## 🎯 Key Features in Detail
 
-### Data Format
-- Dates should be in Excel date format
-- Amounts should be numbers (not text)
-- Valid units: IMD, DCD, TRD, MED
-- Valid territories: EXPORT, DOMESTIC, GENERAL
+### All Dates Display
+- When a specific month is selected, shows ALL days of that month (1-31, 1-30, or 1-28/29)
+- Zero sales days appear as empty bars
+- No gaps or skipped dates
 
-### Column Matching
-- Column names are **case-insensitive** (`Inv. Date` = `inv date`)
-- If you have multiple "Total Amt" columns, the **last one** is used
-- Extra columns are ignored (won't cause errors)
+### Horizontal Bar Charts
+- Customer names on Y-axis (easier to read)
+- Sales amounts on X-axis
+- Truncated names with full name on hover
+- Ideal for displaying multiple customers
 
-## 🔧 Troubleshooting
+### Toast Notifications
+- Animated notifications with close button
+- Color-coded messages:
+  - 🟢 Success (green)
+  - 🟡 Warning (yellow)
+  - 🔴 Error (red)
+  - 🟣 Info (purple)
+- Auto-dismiss after 4 seconds
 
-### "Could not load data file" Error
-✅ Check if `data.xlsx` is in the same folder as `dashboard.html`
-✅ Make sure file name is exactly `data.xlsx`
-✅ Open via Live Server (not by double-clicking)
-✅ Check browser console (F12) for detailed errors
+## 📊 Data Processing
 
-### "No valid rows found" Error
-✅ Check column names match the supported names above
-✅ Ensure dates are in Excel date format (not text)
-✅ Verify amounts are numbers
-✅ Check that Unit and Territory columns have valid values
+The dashboard automatically:
+1. Reads Excel file using SheetJS
+2. Parses dates to standard format
+3. Normalizes territory names (EXPORT, DOMESTIC, GENERAL)
+4. Aggregates sales by date, customer, unit, territory
+5. Handles missing or invalid data gracefully
 
-### Charts Not Displaying
-✅ Click "Refresh Data" button
-✅ Try different browser (Chrome recommended)
-✅ Clear browser cache (Ctrl+Shift+R)
+## ⚡ Performance Tips
 
-### Export Not Working
-✅ Make sure you're viewing a chart first
-✅ Check if browser is blocking downloads
-✅ Try clicking export button again
-## 🎨 Features
+- Charts are destroyed and recreated on update (prevents memory leaks)
+- Data filtering is optimized using Map objects
+- Responsive design ensures smooth rendering on all devices
+- Lazy loading of charts when switching tabs
 
-### Data Filters (Day-wise Tab)
-- Month dropdown (All Months or specific month)
-- Unit filter (All Units or IMD/DCD/TRD/MED)
-- Territory filter (All or Export/Domestic/General)
-- Real-time chart updates
+## 🐛 Troubleshooting
 
-## 📝 Data Privacy
-- All data processing happens in your browser
-- No data is sent to any server
-- Data file stays on your computer
-- Safe to use with sensitive business data
+### Common Issues
 
-## 🔄 Updating Data
-1. Edit your `data.xlsx` file
-2. Save the file
-3. Click **"Refresh Data"** button in dashboard
-4. Dashboard updates automatically
+1. **"Could not load data file" error**
+   - Ensure `data.xlsx` is in the same folder as the HTML file
+   - Check file name is exactly `data.xlsx` (case-sensitive)
+   - Verify file is not corrupted
 
-## 💡 Tips for Best Results
-- Keep Excel file under 5MB for fast loading
-- Use consistent date formats
-- Avoid blank rows in Excel
-- Close Excel file before refreshing dashboard
-- Use latest Chrome/Firefox for best performance
+2. **No data showing**
+   - Check Excel column names match required format
+   - Ensure dates are properly formatted
+   - Verify sales amounts are numeric
+
+3. **Charts not rendering**
+   - Clear browser cache and reload
+   - Check browser console for errors
+   - Ensure internet connection for Chart.js CDN
+
+4. **Dates showing incorrectly**
+   - Excel dates should be in DD.MM.YYYY format or Excel date numbers
+   - The dashboard handles multiple date formats
+
+## 🔒 Browser Compatibility
+
+| Browser |   Support |
+|---------|---------|---------|
+| Chrome  |     ✅ Full |
+| Firefox |     ✅ Full |
+| Safari  |     ✅ Full |
+| Edge    |     ✅ Full |
+| Opera   |     ✅ Full |
+| comet   |     ✅ Full |
+
+## 📊 Sample Data Structure
+
+Your Excel file should look like this:
+
+| Inv. Date | Unit | Territory | Sale Amt. | Benf. Name |
+|-----------|------|-----------|-----------|------------|
+| 01.01.2024 | IMD | DOMESTIC | 25000 | ABC Company |
+| 02.01.2024 | DCD | EXPORT | 45000 | XYZ Corp |
+| 03.01.2024 | TRD | GENERAL | 15000 | DEF Ltd |
 
 ---
-**Supported Browsers:** Chrome, Firefox, Edge, Safari (latest versions)
+**Last Updated:** March 2026
 ```
+
+
