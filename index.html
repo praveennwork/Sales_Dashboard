@@ -8,11 +8,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+/* Theme Colors */
 :root {
   --bg: #f8fafc;
   --bg2: #ffffff;
@@ -23,17 +25,27 @@
   --muted: #64748b;
   --accent: #3b82f6;
   --accent-hover: #2563eb;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #8b5cf6;
+
+  /* Dept Colors */
   --imd: #3b82f6;
   --dcd: #f59e0b;
   --trd: #8b5cf6;
   --med: #10b981;
+
+  /* Zone Colors */
   --export: #06b6d4;
   --domestic: #ef4444;
   --general: #f97316;
+  --shadow-float: 0 10px 15px -3px rgba(0,0,0,0.05);
   --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
   --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
 }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -43,178 +55,195 @@ body {
   width: 100%;
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3, .tab, .kpi .val {
-  font-family: 'Inter', sans-serif;
-}
 
-/* ========== ENHANCED LOADING ANIMATION ========== */
 #loader {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 32px;
   z-index: 999;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s ease;
 }
+
 #loader.hide {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
+/* Loader  */
 .loader-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Ring Spin */
 .loader-ring {
   position: absolute;
-  width: 80px;
-  height: 80px;
-  border: 3px solid transparent;
   border-radius: 50%;
-  animation: ringPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: ringRotate 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .loader-ring-1 {
+  width: 110px;
+  height: 110px;
+  border: 3px solid transparent;
   border-top-color: var(--accent);
   border-right-color: var(--accent);
-  animation-delay: 0s;
+  animation-duration: 1.2s;
 }
 
 .loader-ring-2 {
-  width: 60px;
-  height: 60px;
+  width: 85px;
+  height: 85px;
+  border: 3px solid transparent;
   border-bottom-color: #f59e0b;
   border-left-color: #f59e0b;
-  animation-delay: 0.3s;
+  animation-duration: 1.5s;
+  animation-direction: reverse;
 }
 
 .loader-ring-3 {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
+  border: 3px solid transparent;
   border-top-color: #10b981;
   border-right-color: #10b981;
-  animation-delay: 0.6s;
+  animation-duration: 1s;
 }
 
-@keyframes ringPulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
+.loader-ring-4 {
+  width: 35px;
+  height: 35px;
+  border: 3px solid transparent;
+  border-bottom-color: #8b5cf6;
+  border-left-color: #8b5cf6;
+  animation-duration: 1.8s;
+  animation-direction: reverse;
 }
 
+@keyframes ringRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Loader Logo */
 .loader-logo {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  background: var(--accent);
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
   border-radius: 50%;
-  animation: logoGlow 1.5s ease-in-out infinite;
-  box-shadow: 0 0 15px var(--accent);
+  animation: logoPulse 1.4s ease-in-out infinite, logoFloat 2s ease-in-out infinite;
+  box-shadow: 0 0 30px rgba(59,130,246,0.5);
 }
 
-@keyframes logoGlow {
-  0%, 100% {
-    transform: scale(0.9);
-    box-shadow: 0 0 5px var(--accent);
-  }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 25px var(--accent);
-  }
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.12); opacity: 1; }
 }
 
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Loader Text */
 .loader-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: 2px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  background: linear-gradient(90deg, var(--accent), #f59e0b, var(--accent));
-  background-size: 200% auto;
+  background: linear-gradient(90deg, var(--accent), #f59e0b, #10b981, var(--accent));
+  background-size: 300% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: textShine 2s linear infinite;
+  animation: textShine 2.5s linear infinite;
 }
 
 @keyframes textShine {
-  to {
-    background-position: 200% center;
-  }
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
 }
 
+/* Progress */
 .loader-progress {
-  width: 200px;
-  height: 3px;
+  width: 260px;
+  height: 4px;
   background: var(--border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
+  position: relative;
 }
 
 .loader-progress-bar {
   width: 0%;
   height: 100%;
   background: linear-gradient(90deg, var(--accent), #f59e0b, #10b981);
-  border-radius: 3px;
-  animation: progressFill 1.8s ease-out forwards;
+  border-radius: 4px;
+  animation: progressFill 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  position: relative;
+}
+
+/* Shimmer */
+.loader-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1s ease-in-out infinite;
 }
 
 @keyframes progressFill {
   0% { width: 0%; }
-  30% { width: 45%; }
-  60% { width: 75%; }
+  25% { width: 35%; }
+  50% { width: 65%; }
+  75% { width: 85%; }
   100% { width: 100%; }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Dots */
 .loader-dots {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   margin-top: 8px;
 }
 
 .loader-dot {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
   background: var(--accent);
   border-radius: 50%;
-  animation: dotBounce 1.2s ease-in-out infinite;
+  animation: dotBounce 1s ease-in-out infinite;
 }
 
-.loader-dot:nth-child(1) { animation-delay: 0s; }
-.loader-dot:nth-child(2) { animation-delay: 0.2s; }
-.loader-dot:nth-child(3) { animation-delay: 0.4s; }
+.loader-dot:nth-child(1) { animation-delay: 0s; background: var(--accent); }
+.loader-dot:nth-child(2) { animation-delay: 0.15s; background: #f59e0b; }
+.loader-dot:nth-child(3) { animation-delay: 0.3s; background: #10b981; }
+.loader-dot:nth-child(4) { animation-delay: 0.45s; background: #8b5cf6; }
 
 @keyframes dotBounce {
-  0%, 80%, 100% {
-    transform: scale(0.6);
-    opacity: 0.4;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+  40% { transform: scale(1.2); opacity: 1; }
 }
 
-/* Error */
 #error {
   display: none;
   position: fixed;
@@ -223,39 +252,30 @@ h1, h2, h3, .tab, .kpi .val {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 20px;
+  gap: 16px;
+  padding: 24px;
   text-align: center;
   z-index: 1000;
 }
-#error.show {
-  display: flex;
-}
-#error h2 {
-  color: #dc2626;
-  font-size: clamp(18px,5vw,24px);
-  font-weight: 600;
-}
-#error p {
-  color: var(--muted);
-  font-size: clamp(13px,3.5vw,15px);
-  max-width: 90%;
-  line-height: 1.6;
-}
+
+#error.show { display: flex; }
+
+#error h2 { color: #dc2626; font-size: clamp(18px, 5vw, 24px); font-weight: 600; }
+
+#error p { color: var(--muted); font-size: clamp(13px, 3.5vw, 15px); max-width: 90%; line-height: 1.6; }
+
 #error code {
   background: var(--bg3);
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 13px;
   color: var(--accent);
   display: inline-block;
 }
-
-/* Header */
 header {
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 16px 20px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -267,104 +287,98 @@ header {
   z-index: 100;
   width: 100%;
 }
+
 header h1 {
-  font-size: clamp(20px,4vw,24px);
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
 }
-header h1 span {
-  color: var(--accent);
-  font-weight: 600;
-}
+
+header h1 span { color: var(--accent); }
+
 #meta {
-  font-size: clamp(11px,2.5vw,13px);
+  font-size: clamp(11px, 2.5vw, 13px);
   color: var(--muted);
   margin-top: 4px;
   font-weight: 500;
 }
+
 #refresh-info {
-  font-size: clamp(11px,2.5vw,13px);
+  font-size: clamp(11px, 2.5vw, 13px);
   color: var(--muted);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
   font-weight: 500;
 }
-#refresh-info b {
-  color: var(--accent);
-  font-weight: 600;
-}
 
+#refresh-info b { color: var(--accent); font-weight: 600; }
+
+/* Buttons */
 .btn {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 8px 18px;
+  border-radius: 10px;
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px,2.5vw,13px);
+  font-size: clamp(12px, 2.5vw, 13px);
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
+
 .btn:hover {
   background: var(--accent-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-.btn:active {
-  transform: translateY(0);
-}
-.btn svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
-}
-.btn-success {
-  background: #10b981;
-}
-.btn-success:hover {
-  background: #059669;
-}
 
-/* Export buttons */
+.btn:active { transform: translateY(0); }
+
+.btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+.btn-success { background: #10b981; }
+.btn-success:hover { background: #059669; }
+
+/* Export Action */
 .export-buttons {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding: 12px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
   background: var(--bg2);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
-
-/* KPI Row */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  padding: 24px;
   width: 100%;
 }
+
 .kpi {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 14px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: var(--shadow-float);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .kpi::before {
   content: '';
   position: absolute;
@@ -372,71 +386,66 @@ header h1 span {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.08), transparent);
   transition: left 0.5s ease;
   z-index: 1;
   pointer-events: none;
 }
+
 .kpi:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md);
   border-color: var(--border-hover);
 }
-.kpi:hover::before {
-  left: 100%;
-}
+
+.kpi:hover::before { left: 100%; }
+
 .kpi .label {
-  font-size: clamp(10px,2.2vw,12px);
+  font-size: clamp(10px, 2.2vw, 12px);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: 8px;
+  font-weight: 600;
   position: relative;
   z-index: 2;
-  font-weight: 600;
 }
+
 .kpi .val {
-  font-size: clamp(16px,3.5vw,22px);
+  font-size: clamp(18px, 4vw, 24px);
   font-weight: 700;
   line-height: 1.2;
-  word-break: break-word;
   display: inline-block;
   transition: transform 0.2s ease;
   position: relative;
   z-index: 2;
   letter-spacing: -0.02em;
 }
+
 .kpi .sub {
-  font-size: clamp(10px,2.2vw,12px);
+  font-size: clamp(10px, 2.2vw, 12px);
   color: var(--muted);
-  margin-top: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-top: 8px;
+  font-weight: 500;
   position: relative;
   z-index: 2;
-  font-weight: 500;
 }
-
-/* Tabs */
 .tabs {
   display: flex;
-  gap: 4px;
-  padding: 0 20px;
+  gap: 6px;
+  padding: 0 24px;
   border-bottom: 1px solid var(--border);
   background: var(--bg2);
   overflow-x: auto;
   scrollbar-width: thin;
   width: 100%;
 }
+
 .tab {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px,3vw,14px);
+  font-size: clamp(12px, 3vw, 14px);
   font-weight: 600;
-  padding: 12px 16px;
+  padding: 12px 20px;
   background: none;
   border: none;
   color: var(--muted);
@@ -446,16 +455,15 @@ header h1 span {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.tab:hover {
-  color: var(--text);
-}
+
+.tab:hover { color: var(--text); }
+
 .tab.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
-
 #content {
-  padding: 20px;
+  padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -464,23 +472,22 @@ header h1 span {
 /* Filters */
 .filters {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   align-items: flex-end;
   background: var(--bg2);
-  padding: 16px;
-  border-radius: 12px;
+  padding: 18px 20px;
+  border-radius: 14px;
   border: 1px solid var(--border);
   width: 100%;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-float);
 }
-.filters > div {
-  flex: 1 1 150px;
-  min-width: 130px;
-}
+
+.filters > div { flex: 1 1 160px; min-width: 140px; }
+
 .filters label {
-  font-size: clamp(10px,2.2vw,12px);
+  font-size: clamp(10px, 2.2vw, 12px);
   color: var(--muted);
   display: block;
   margin-bottom: 6px;
@@ -488,146 +495,290 @@ header h1 span {
   letter-spacing: 0.04em;
   font-weight: 600;
 }
+
 .filters select {
   background: var(--bg3);
   border: 1px solid var(--border);
   color: var(--text);
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: 'Inter', sans-serif;
-  font-size: clamp(13px,2.8vw,14px);
+  font-size: clamp(13px, 2.8vw, 14px);
   cursor: pointer;
   outline: none;
   width: 100%;
   font-weight: 500;
   transition: all 0.2s;
 }
-.filters select:hover {
-  border-color: var(--border-hover);
-}
+
+.filters select:hover { border-color: var(--border-hover); }
+
 .filters select:focus {
   border-color: var(--accent);
   background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
 }
-#day-count, #customer-count {
-  font-size: clamp(11px,2.5vw,13px);
+
+#day-count,
+#customer-count {
+  font-size: clamp(11px, 2.5vw, 13px);
   color: var(--muted);
   align-self: center;
   background: var(--bg3);
-  padding: 8px 14px;
-  border-radius: 8px;
-  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 10px;
   font-weight: 500;
 }
-
-/* Cards */
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-float);
   width: 100%;
   transition: box-shadow 0.2s;
 }
-.card:hover {
-  box-shadow: var(--shadow);
-}
+
+.card:hover { box-shadow: var(--shadow); }
+
 .card h3 {
-  font-size: clamp(14px,3.2vw,16px);
+  font-size: clamp(14px, 3.2vw, 16px);
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   color: var(--text);
   letter-spacing: -0.01em;
 }
+
 .card p {
-  font-size: clamp(12px,2.5vw,13px);
+  font-size: clamp(12px, 2.5vw, 13px);
   color: var(--muted);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   font-weight: 500;
 }
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 24px;
   width: 100%;
 }
+
+/* Canvas */
 .canvas-container {
   position: relative;
   width: 100%;
-  min-height: 200px;
+  min-height: 220px;
   height: auto;
   margin: 0 auto;
   background: var(--bg);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  padding: 12px;
+  padding: 16px;
 }
-.canvas-container.medium {
-  min-height: 150px;
-}
+
+.canvas-container.medium { min-height: 170px; }
+.canvas-container.horizontal { min-height: 320px; }
+
 canvas {
   display: block;
   width: 100% !important;
   height: auto !important;
 }
-
-/* Responsive */
 @media (max-width: 900px) {
-  .two-col { grid-template-columns: 1fr; gap: 16px; }
-  .kpi-row { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; padding: 16px; }
-  header { padding: 14px 16px; }
-  #content { padding: 16px; }
+  .two-col { grid-template-columns: 1fr; gap: 20px; }
+  .kpi-row { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; padding: 16px; }
+  header { padding: 14px 18px; }
+  #content { padding: 18px; }
   .tabs { padding: 0 16px; }
-  .filters { padding: 14px; gap: 10px; }
-  .filters > div { flex: 1 1 130px; min-width: 110px; }
-  .canvas-container { min-height: 180px; }
-  .canvas-container.medium { min-height: 140px; }
+  .filters { padding: 16px; gap: 12px; }
+  .filters > div { flex: 1 1 140px; min-width: 120px; }
+  .canvas-container { min-height: 200px; }
+  .canvas-container.medium { min-height: 150px; }
+  .canvas-container.horizontal { min-height: 280px; }
   .export-buttons { flex-direction: column; }
   .export-buttons .btn { width: 100%; justify-content: center; }
 }
+
 @media (max-width: 600px) {
-  header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  header { flex-direction: column; align-items: flex-start; gap: 10px; }
   #refresh-info { text-align: left; width: 100%; }
-  .kpi-row { padding: 12px; gap: 8px; grid-template-columns: repeat(2, 1fr); }
-  .kpi { padding: 12px 10px; border-radius: 10px; }
-  .kpi .val { font-size: 16px; }
+  .kpi-row { padding: 12px; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+  .kpi { padding: 12px 10px; border-radius: 12px; }
+  .kpi .val { font-size: 18px; }
   .tabs { padding: 0 12px; }
-  .tab { padding: 10px 12px; font-size: 12px; }
-  #content { padding: 12px; }
-  .filters { padding: 12px; gap: 8px; flex-direction: column; align-items: stretch; }
+  .tab { padding: 10px 14px; font-size: 12px; }
+  #content { padding: 14px; }
+  .filters { padding: 14px; gap: 10px; flex-direction: column; align-items: stretch; }
   .filters > div { width: 100%; min-width: 100%; }
   #day-count, #customer-count { width: 100%; text-align: center; white-space: normal; }
-  .card { padding: 14px 12px; border-radius: 10px; }
-  .two-col { gap: 12px; }
-  .canvas-container { min-height: 160px; }
-  .canvas-container.medium { min-height: 120px; }
+  .card { padding: 14px; border-radius: 12px; }
+  .two-col { gap: 14px; }
+  .canvas-container { min-height: 180px; }
+  .canvas-container.medium { min-height: 140px; }
+  .canvas-container.horizontal { min-height: 260px; }
 }
+
 @media (max-width: 380px) {
-  .kpi-row { gap: 6px; padding: 10px; }
+  .kpi-row { gap: 8px; padding: 10px; }
   .kpi { padding: 10px 8px; }
-  .kpi .val { font-size: 14px; }
-  .tab { padding: 8px 10px; font-size: 11px; }
+  .kpi .val { font-size: 16px; }
+  .tab { padding: 8px 12px; font-size: 11px; }
 }
+
 @media (min-width: 1400px) {
-  #content { padding: 28px 40px; }
-  .kpi-row { padding: 24px 40px; }
-  .kpi .val { font-size: 24px; }
+  #content { padding: 32px 48px; }
+  .kpi-row { padding: 28px 48px; }
+  .kpi .val { font-size: 26px; }
   .kpi .label { font-size: 13px; }
-  .canvas-container { min-height: 240px; padding: 16px; }
-  .canvas-container.medium { min-height: 170px; }
+  .canvas-container { min-height: 260px; padding: 18px; }
+  .canvas-container.medium { min-height: 190px; }
+  .canvas-container.horizontal { min-height: 380px; }
+}
+
+.kpi, .filters, .card {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.btn {
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+.btn.btn-success:hover {
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+.btn:active {
+  transform: scale(0.92) translateY(0);
+}
+.btn svg {
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.btn.rotate-icon svg {
+  transform: rotate(360deg);
+}
+header h1 {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+header h1:hover { opacity: 0.8; }
+.tab-view {
+  transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tab-view.anim-out {
+  transform: scale(0.98);
+  opacity: 0;
+}
+.tab-view.anim-in {
+  animation: slideScaleIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes slideScaleIn {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+.toast {
+  background: var(--bg2);
+  color: var(--text);
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--accent);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: toastSlideIn 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+  max-width: 360px;
+  min-width: 260px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  position: relative;
+}
+
+.toast.toast-out {
+  animation: toastSlideOut 0.3s ease forwards;
+}
+
+.toast-success { border-left-color: var(--success); }
+.toast-warning { border-left-color: var(--warning); }
+.toast-error { border-left-color: var(--error); }
+.toast-info { border-left-color: var(--info); }
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  background: var(--bg3);
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 </style>
 </head>
 <body>
-
+  
 <div id="loader">
   <div class="loader-container">
     <div class="loader-ring loader-ring-1"></div>
     <div class="loader-ring loader-ring-2"></div>
     <div class="loader-ring loader-ring-3"></div>
+    <div class="loader-ring loader-ring-4"></div>
     <div class="loader-logo"></div>
   </div>
   <div class="loader-text">G-plast Dashboard</div>
@@ -638,16 +789,16 @@ canvas {
     <div class="loader-dot"></div>
     <div class="loader-dot"></div>
     <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
   </div>
 </div>
-
 <div id="error">
-  <h2>Could not load data file</h2>
-  <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file.</p>
+  <h2>⚠️ Could not load data file</h2>
+  <p>Make sure <code>data.xlsx</code> is in the same folder as this HTML file</p>
   <button class="btn" onclick="location.reload()">Retry</button>
 </div>
-
 <div id="app" style="display:none;">
+  <div id="toast-container"></div>
   <header>
     <div>
       <h1>Sales <span>Dashboard</span></h1>
@@ -664,16 +815,20 @@ canvas {
     </div>
   </header>
 
+  <!-- KPI Track -->
   <div class="kpi-row" id="kpi-row"></div>
 
+  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" data-tab="monthly">Monthly Overview</button>
     <button class="tab" data-tab="daily">Day-wise</button>
     <button class="tab" data-tab="customer">Customer Analysis</button>
   </div>
 
+  <!-- Tab Views -->
   <div id="content">
-    <div id="tab-monthly">
+    <!-- Monthly -->
+    <div id="tab-monthly" class="tab-view">
       <div class="export-buttons">
         <button class="btn btn-success" onclick="exportToExcel('monthly')">
           <svg viewBox="0 0 24 24" width="14" height="14">
@@ -698,7 +853,8 @@ canvas {
       </div>
     </div>
 
-    <div id="tab-daily" style="display:none;">
+    <!-- Daily Tab  -->
+    <div id="tab-daily" style="display:none;" class="tab-view">
       <div class="export-buttons">
         <button class="btn btn-success" onclick="exportToExcel('daily')">
           <svg viewBox="0 0 24 24" width="14" height="14">
@@ -719,7 +875,8 @@ canvas {
       </div>
     </div>
 
-    <div id="tab-customer" style="display:none;">
+    <!-- Customer Tab -->
+    <div id="tab-customer" style="display:none;" class="tab-view">
       <div class="export-buttons">
         <button class="btn btn-success" onclick="exportToExcel('customer-overview')">
           <svg viewBox="0 0 24 24" width="14" height="14">
@@ -735,11 +892,38 @@ canvas {
         <div><label>Territory</label><select id="fc-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
         <span id="customer-count"></span>
       </div>
+      
+      <!-- Top Customers Horizontal Chart -->
       <div class="card">
-        <h3>Customer Sales Overview</h3>
-        <div class="canvas-container"><canvas id="chart-customer-overview"></canvas></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+          <h3>🏆 Top Customers (Horizontal Bar)</h3>
+          <button class="btn btn-success" onclick="exportTopCustomers()" style="background: #10b981; padding: 6px 14px;">
+            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Export Top Customers
+          </button>
+        </div>
+        <div class="canvas-container horizontal"><canvas id="chart-top-horizontal"></canvas></div>
+      </div>
+      
+      <!-- Bottom 10 Horizontal Chart -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+          <h3>📉 Bottom 10 Customers (Horizontal Bar)</h3>
+          <button class="btn btn-success" onclick="exportBottomCustomers()" style="background: #f59e0b; padding: 6px 14px;">
+            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Export Bottom 10
+          </button>
+        </div>
+        <div class="canvas-container horizontal"><canvas id="chart-bottom-horizontal"></canvas></div>
       </div>
 
+      <!-- Original Vertical Bar Chart ( -->
+      <!-- <div class="card">
+        <h3>Customer Sales Overview (Vertical Bar)</h3>
+        <div class="canvas-container"><canvas id="chart-customer-overview"></canvas></div>
+      </div> -->
+
+      <!-- Customer Daily Sales Section -->
       <div class="filters" style="margin-top:20px">
         <div><label>Select Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
         <div><label>Month</label><select id="fc-month-daily"><option value="all">All Months</option></select></div>
@@ -747,7 +931,13 @@ canvas {
         <div><label>Territory</label><select id="fc-territory-daily"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
       </div>
       <div class="card">
-        <h3>Customer Day-wise Sales</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+          <h3>Customer Day-wise Sales</h3>
+          <button class="btn btn-success" onclick="exportSelectedCustomerDaily()" style="background: #8b5cf6; padding: 6px 14px;">
+            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Export Selected Customer
+          </button>
+        </div>
         <div class="canvas-container medium"><canvas id="chart-customer-daily"></canvas></div>
       </div>
     </div>
@@ -755,27 +945,56 @@ canvas {
 </div>
 
 <script>
-/* ============================================
-   G-plast Sales Dashboard - Strict Column Mapping
-   
-   REQUIRED EXCEL COLUMNS (EXACT MATCH):
-   - Inv. Date     → Date
-   - Unit          → Department/Unit
-   - Territory     → Territory
-   - Benf. Name    → Customer Name
-   - Sale Amt.     → Amount
-   
-   NO OTHER COLUMN NAMES WILL WORK
-   ============================================ */
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const DEPTS = ['IMD', 'DCD', 'TRD', 'MED'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DEPTS = ['IMD','DCD','TRD','MED'];
 const DEPT_COLORS = { IMD: '#3b82f6', DCD: '#f59e0b', TRD: '#8b5cf6', MED: '#10b981' };
 const TER_COLORS = { EXPORT: '#06b6d4', DOMESTIC: '#ef4444', GENERAL: '#f97316' };
 const GRID = '#e5e7eb';
 const AXIS_TEXT = '#475569';
 
-/* Chart Helpers */
+/* Toast System with Close Button */
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  let icon = '';
+  switch(type) {
+    case 'success':
+      icon = '<svg class="toast-icon" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+      break;
+    case 'warning':
+      icon = '<svg class="toast-icon" viewBox="0 0 24 24" fill="#f59e0b"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+      break;
+    case 'error':
+      icon = '<svg class="toast-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+      break;
+    default:
+      icon = '<svg class="toast-icon" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+  }
+  
+  const closeBtn = '<svg class="toast-close" viewBox="0 0 24 24" fill="#64748b"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+  
+  toast.innerHTML = icon + '<span class="toast-message">' + message + '</span>' + closeBtn;
+  container.appendChild(toast);
+  
+  const closeBtnElement = toast.querySelector('.toast-close');
+  let timeoutId = setTimeout(() => removeToast(toast), 4000);
+  
+  closeBtnElement.addEventListener('click', () => {
+    clearTimeout(timeoutId);
+    removeToast(toast);
+  });
+  
+  function removeToast(toastElement) {
+    toastElement.classList.add('toast-out');
+    setTimeout(() => toastElement.remove(), 300);
+  }
+}
+
+/* Tooltips */
 const tooltipCfg = {
   backgroundColor: '#ffffff',
   borderColor: '#e2e8f0',
@@ -784,14 +1003,30 @@ const tooltipCfg = {
   bodyColor: '#000000',
   titleFont: { family: 'Inter', weight: 'bold', size: 13 },
   bodyFont: { family: 'Inter', weight: '500', size: 12 },
-  callbacks: { label: (ctx) => ' ' + fmt(round2(ctx.parsed.y ?? ctx.parsed)) }
+  callbacks: { label: (ctx) => ' ' + fmt(round2(ctx.parsed.x ?? ctx.parsed.y ?? ctx.parsed)) }
 };
 
+/* Axes */
 const axisCfg = {
   color: AXIS_TEXT,
   font: { family: 'Inter', size: window.innerWidth < 600 ? 9 : 11, weight: '500' }
 };
 
+/* Scales for horizontal charts */
+const horizontalScaleCfg = () => ({
+  x: {
+    grid: { color: GRID, lineWidth: 0.5 },
+    ticks: { ...axisCfg, callback: v => fmt(v) },
+    border: { display: false }
+  },
+  y: {
+    grid: { color: GRID, lineWidth: 0.5, display: true },
+    ticks: { ...axisCfg, autoSkip: false, maxRotation: 0, minRotation: 0 },
+    border: { display: false }
+  }
+});
+
+/* Scales for vertical charts */
 const scaleCfg = () => ({
   x: {
     grid: { color: GRID, lineWidth: 0.5 },
@@ -805,44 +1040,41 @@ const scaleCfg = () => ({
   }
 });
 
+/* Chart Store */
 const charts = {};
+
+/* Chart Init */
 const mkChart = (id, type, data, opts) => {
   if (charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id);
   if (ctx) charts[id] = new Chart(ctx, { type, data, options: opts });
 };
 
-/* Data Formatting */
+/* Math Util */
 const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
 
+/* Currency UI */
 const fmt = (v) => {
   v = round2(v);
-  if (v >= 1e7) return (v / 1e7).toFixed(2) + ' Cr';
-  if (v >= 1e5) return (v / 1e5).toFixed(2) + ' L';
+  if (v >= 1e7) return (v/1e7).toFixed(2) + ' Cr';
+  if (v >= 1e5) return (v/1e5).toFixed(2) + ' L';
   return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
-/* ========== STRICT COLUMN MAPPING - EXACT NAMES ONLY ========== */
-const getCol = (row, exactName) => {
-  for (const k of Object.keys(row)) {
-    if (k === exactName) return row[k];
-  }
-  return '';
-};
-
+/* Date Parser */
 const parseDate = (v) => {
   if (v instanceof Date) return isNaN(v) ? null : new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()));
   if (typeof v === 'number') {
     try {
       const d = XLSX.SSF.parse_date_code(v);
-      if (d) return new Date(Date.UTC(d.y, d.m - 1, d.d));
+      if (d) return new Date(Date.UTC(d.y, d.m-1, d.d));
       return null;
-    } catch (e) { return null; }
+    } catch(e) { return null; }
   }
   if (typeof v === 'string' && v.trim()) {
     const p = v.trim().split('.');
     if (p.length === 3) {
-      const date = new Date(Date.UTC(+p[2], +p[1] - 1, +p[0]));
+      const date = new Date(Date.UTC(+p[2], +p[1]-1, +p[0]));
       if (!isNaN(date)) return date;
     }
     const fb = new Date(v + 'T00:00:00Z');
@@ -851,6 +1083,13 @@ const parseDate = (v) => {
   return null;
 };
 
+/* Helper: Get standardized date string */
+const getDateKey = (date) => {
+  if (!date) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
+/* Normalize Zone */
 const normTerritory = (v) => {
   const s = String(v).toUpperCase().trim();
   if (s === 'EXPORT' || s === 'EXP') return 'EXPORT';
@@ -859,6 +1098,7 @@ const normTerritory = (v) => {
   return s;
 };
 
+/* Month Key */
 const monthKey = (d) => MONTHS[d.getMonth()] + ' ' + d.getFullYear();
 
 /* Global State */
@@ -868,40 +1108,33 @@ let currentMonthlyChartData = null;
 let currentDailyChartData = null;
 let currentCustomerOverviewData = null;
 let currentCustomerDailyData = null;
+let currentTopCustomersData = [];
+let currentBottom10Data = [];
 
-/* ========== EXCEL PARSER - STRICT COLUMN NAMES ========== */
+/* Section Break */
 const parseExcel = (buf) => {
   const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true });
   const ws = wb.Sheets[wb.SheetNames[0]];
   const json = XLSX.utils.sheet_to_json(ws, { defval: '', blankrows: false });
   totalExcelRows = json.length;
 
-  // Check if required columns exist
-  const sampleRow = json[0] || {};
-  const requiredCols = ['Inv. Date', 'Unit', 'Territory', 'Benf. Name', 'Sale Amt.'];
-  const missingCols = requiredCols.filter(col => !sampleRow.hasOwnProperty(col));
-  
-  if (missingCols.length > 0) {
-    console.warn('Missing columns:', missingCols);
-    // Still try to parse with what's available
-  }
-
   return json.map(row => {
-    // Get amount from 'Sale Amt.' column
     let amount = 0;
     const saleAmt = row['Sale Amt.'];
     if (saleAmt !== undefined && saleAmt !== '') {
       amount = round2(parseFloat(saleAmt) || 0);
     }
+    if (amount === 0 && row['Total Amt']) {
+      amount = round2(parseFloat(row['Total Amt']) || 0);
+    }
 
-    // Get customer name from 'Benf. Name' column
-    let customer = row['Benf. Name'];
-    if (customer && typeof customer === 'string') {
-      customer = customer.trim();
-    } else if (customer) {
-      customer = String(customer).trim();
-    } else {
-      customer = '';
+    let customer = '';
+    if (row['Benf. Name'] !== undefined && row['Benf. Name'] !== '') {
+      customer = String(row['Benf. Name']);
+    } else if (row['Benf Name'] !== undefined) {
+      customer = String(row['Benf Name']);
+    } else if (row['Customer'] !== undefined) {
+      customer = String(row['Customer']);
     }
 
     return {
@@ -913,19 +1146,17 @@ const parseExcel = (buf) => {
     };
   }).filter(r => r.date && r.unit && r.amt > 0);
 };
-
-/* KPI Renderer */
 const renderKPI = (rows) => {
-  const grand = round2(rows.reduce((s, r) => s + r.amt, 0));
+  const grand = round2(rows.reduce((s,r) => s+r.amt, 0));
   const items = [
     { label: 'Grand Total', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows · Excel: ' + totalExcelRows, key: 'grand' },
     ...DEPTS.map(d => {
-      const v = round2(rows.filter(r => r.unit === d).reduce((s, r) => s + r.amt, 0));
-      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v / grand * 100).toFixed(1) + '%' : '—', key: d };
+      const v = round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0));
+      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v/grand*100).toFixed(1)+'%' : '—', key: d };
     }),
-    { label: 'Export', val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.EXPORT, sub: 'Export sales', key: 'EXPORT' },
-    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
-    { label: 'General', val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s, r) => s + r.amt, 0)), color: TER_COLORS.GENERAL, sub: 'General sales', key: 'GENERAL' },
+    { label: 'Export', val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.EXPORT, sub: 'Export sales', key: 'EXPORT' },
+    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
+    { label: 'General', val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.GENERAL, sub: 'General sales', key: 'GENERAL' },
   ];
   document.getElementById('kpi-row').innerHTML = items.map(k =>
     `<div class="kpi" data-kpi="${k.key}">
@@ -935,8 +1166,6 @@ const renderKPI = (rows) => {
     </div>`
   ).join('');
 };
-
-/* Monthly Charts */
 const renderMonthly = (rows) => {
   const map = {};
   rows.forEach(({ date, unit, amt }) => {
@@ -946,16 +1175,16 @@ const renderMonthly = (rows) => {
     if (map[mk][unit] !== undefined) map[mk][unit] += amt;
   });
 
-  const sorted = Object.entries(map).sort((a, b) => a[1]._d - b[1]._d);
+  const sorted = Object.entries(map).sort((a,b) => a[1]._d - b[1]._d);
   const labels = sorted.map(([k]) => k);
 
   currentMonthlyChartData = {
     labels: labels,
-    total: sorted.map(([, v]) => round2(v.total)),
-    imd: sorted.map(([, v]) => round2(v.IMD)),
-    dcd: sorted.map(([, v]) => round2(v.DCD)),
-    trd: sorted.map(([, v]) => round2(v.TRD)),
-    med: sorted.map(([, v]) => round2(v.MED))
+    total: sorted.map(([,v]) => round2(v.total)),
+    imd: sorted.map(([,v]) => round2(v.IMD)),
+    dcd: sorted.map(([,v]) => round2(v.DCD)),
+    trd: sorted.map(([,v]) => round2(v.TRD)),
+    med: sorted.map(([,v]) => round2(v.MED))
   };
 
   mkChart('chart-monthly-total', 'bar', {
@@ -976,7 +1205,7 @@ const renderMonthly = (rows) => {
 
   mkChart('chart-monthly-stack', 'bar', {
     labels,
-    datasets: DEPTS.map((d, i) => ({
+    datasets: DEPTS.map((d,i) => ({
       label: d,
       data: currentMonthlyChartData[d.toLowerCase()],
       backgroundColor: Object.values(DEPT_COLORS)[i] + 'cc',
@@ -995,7 +1224,7 @@ const renderMonthly = (rows) => {
     scales: { x: { ...scaleCfg().x, stacked: true }, y: { ...scaleCfg().y, stacked: true } }
   });
 
-  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s, r) => s + r.amt, 0)));
+  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)));
   mkChart('chart-pie', 'doughnut', {
     labels: DEPTS,
     datasets: [{ data: pieTotals, backgroundColor: Object.values(DEPT_COLORS), borderColor: '#ffffff', borderWidth: 2, hoverOffset: 10 }]
@@ -1005,77 +1234,8 @@ const renderMonthly = (rows) => {
   });
 };
 
-/* Daily Chart */
-const renderDaily = () => {
-  const fMonth = document.getElementById('f-month').value;
-  const fDept = document.getElementById('f-dept').value;
-  const fTer = document.getElementById('f-territory').value;
-  if (!fMonth) return;
-
-  const filtered = allRows.filter(r =>
-    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
-    (fDept === 'all' || r.unit === fDept) &&
-    (fTer === 'all' || r.territory === fTer)
-  );
-
-  const dayMap = {};
-
-  if (fMonth === 'all') {
-    filtered.forEach(({ date, amt }) => {
-      const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      dayMap[dk] = round2((dayMap[dk] || 0) + amt);
-    });
-
-    const allDates = Object.keys(dayMap).sort((a, b) => {
-      const partsA = a.split(' ');
-      const partsB = b.split(' ');
-      const dateA = new Date(parseInt(partsA[2]), MONTHS.indexOf(partsA[1]), parseInt(partsA[0]));
-      const dateB = new Date(parseInt(partsB[2]), MONTHS.indexOf(partsB[1]), parseInt(partsB[0]));
-      return dateA - dateB;
-    });
-
-    const data = allDates.map(d => dayMap[d]);
-    currentDailyChartData = { labels: allDates, data: data };
-    const salesDays = data.filter(v => v > 0).length;
-    document.getElementById('day-count').textContent = `${salesDays} days with sales · ${allDates.length - salesDays} days ₹0`;
-
-    mkChart('chart-daily', 'bar', {
-      labels: allDates,
-      datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
-    }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
-    return;
-  }
-
-  const [mon, yr] = fMonth.split(' ');
-  const monthIndex = MONTHS.indexOf(mon);
-  const year = +yr;
-  const totalDays = new Date(year, monthIndex + 1, 0).getDate();
-
-  filtered.forEach(({ date, amt }) => {
-    const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    dayMap[dk] = round2((dayMap[dk] || 0) + amt);
-  });
-
-  const labels = [], data = [];
-  for (let d = 1; d <= totalDays; d++) {
-    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    labels.push(fullDate);
-    data.push(dayMap[fullDate] || 0);
-  }
-
-  currentDailyChartData = { labels: labels, data: data };
-  const salesDays = data.filter(v => v > 0).length;
-  document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0`;
-
-  mkChart('chart-daily', 'bar', {
-    labels,
-    datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
-  }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
-};
-
-/* Customer Overview - FULL NAMES, NO TRUNCATION */
-const renderCustomerOverview = () => {
-  const fRanking = document.getElementById('fc-ranking').value;
+/* Get Customer Data Based on Filters */
+const getFilteredCustomerData = () => {
   const fMonth = document.getElementById('fc-month').value;
   const fDept = document.getElementById('fc-dept').value;
   const fTer = document.getElementById('fc-territory').value;
@@ -1089,25 +1249,111 @@ const renderCustomerOverview = () => {
   const customerMap = new Map();
   filtered.forEach(row => {
     if (!row.customer || row.customer === '') return;
-    const existing = customerMap.get(row.customer) || 0;
-    customerMap.set(row.customer, existing + row.amt);
+    customerMap.set(row.customer, (customerMap.get(row.customer) || 0) + row.amt);
   });
 
-  let customers = Array.from(customerMap.entries())
+  return Array.from(customerMap.entries())
     .map(([name, total]) => ({ name: name, total: round2(total) }))
-    .filter(c => c.total > 0)
-    .sort((a, b) => b.total - a.total);
+    .filter(c => c.total > 0);
+};
 
+/* Horizontal Top Customers Chart*/
+const renderTopCustomersHorizontal = () => {
+  const fRanking = document.getElementById('fc-ranking').value;
   const limit = fRanking === 'top10' ? 10 : 20;
-  customers = customers.slice(0, limit);
+  
+  let customers = getFilteredCustomerData();
+  customers = customers.sort((a, b) => b.total - a.total).slice(0, limit);
+  
+  currentTopCustomersData = customers;
+  
+  // Update the count display
+  const totalUnique = getFilteredCustomerData().length;
+  document.getElementById('customer-count').textContent = `Showing Top ${limit} customers · Total unique: ${totalUnique}`;
 
-  currentCustomerOverviewData = customers;
-
-  const labels = customers.map(c => c.name);
+  const labels = customers.map(c => c.name.length > 30 ? c.name.substring(0, 27) + '...' : c.name);
   const data = customers.map(c => c.total);
 
-  document.getElementById('customer-count').textContent =
-    `Showing Top ${limit} customers · Total unique: ${customerMap.size}`;
+  mkChart('chart-top-horizontal', 'bar', {
+    labels: labels,
+    datasets: [{
+      label: 'Total Sales',
+      data: data,
+      backgroundColor: '#3b82f6cc',
+      borderColor: '#3b82f6',
+      borderWidth: 1,
+      borderRadius: 6,
+      maxBarThickness: 30
+    }]
+  }, {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipCfg,
+        callbacks: {
+          title: (ctx) => customers[ctx[0].dataIndex].name,
+          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.x)
+        }
+      }
+    },
+    scales: horizontalScaleCfg()
+  });
+};
+
+/* Horizontal Bottom 10 Chart */
+const renderBottom10Horizontal = () => {
+  let customers = getFilteredCustomerData();
+  customers = customers.sort((a, b) => a.total - b.total).slice(0, 10);
+  
+  currentBottom10Data = customers;
+
+  const labels = customers.map(c => c.name.length > 30 ? c.name.substring(0, 27) + '...' : c.name);
+  const data = customers.map(c => c.total);
+
+  mkChart('chart-bottom-horizontal', 'bar', {
+    labels: labels,
+    datasets: [{
+      label: 'Total Sales',
+      data: data,
+      backgroundColor: '#f59e0bcc',
+      borderColor: '#f59e0b',
+      borderWidth: 1,
+      borderRadius: 6,
+      maxBarThickness: 30
+    }]
+  }, {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipCfg,
+        callbacks: {
+          title: (ctx) => customers[ctx[0].dataIndex].name,
+          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.x)
+        }
+      }
+    },
+    scales: horizontalScaleCfg()
+  });
+};
+
+/* Original Vertical Bar Chart (respects ranking selection) */
+const renderCustomerOverview = () => {
+  const fRanking = document.getElementById('fc-ranking').value;
+  const limit = fRanking === 'top10' ? 10 : 20;
+  
+  let customers = getFilteredCustomerData();
+  customers = customers.sort((a, b) => b.total - a.total).slice(0, limit);
+  
+  currentCustomerOverviewData = customers;
+
+  const labels = customers.map(c => c.name.length > 25 ? c.name.substring(0, 22) + '...' : c.name);
+  const data = customers.map(c => c.total);
 
   mkChart('chart-customer-overview', 'bar', {
     labels,
@@ -1128,28 +1374,211 @@ const renderCustomerOverview = () => {
       tooltip: {
         ...tooltipCfg,
         callbacks: {
-          title: (ctx) => ctx[0].label,
+          title: (ctx) => customers[ctx[0].dataIndex].name,
           label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.y)
         }
       }
     },
-    scales: {
-      x: {
-        ...scaleCfg().x,
-        ticks: {
-          ...axisCfg,
-          maxRotation: 45,
-          minRotation: 45,
-          autoSkip: true,
-          maxTicksLimit: 15
-        }
-      },
-      y: scaleCfg().y
-    }
+    scales: scaleCfg()
   });
+  
+  if (customers.length === 0) {
+    showToast('No customer data for selected filters', 'warning');
+  } else {
+    showToast(`Loaded ${customers.length} top customers`, 'info');
+  }
 };
 
-/* Customer Daily */
+
+/* Export Top Customers ( ranking selection) */
+window.exportTopCustomers = () => {
+  if (!currentTopCustomersData || currentTopCustomersData.length === 0) {
+    showToast('No customer data to export', 'warning');
+    return;
+  }
+  
+  const fRanking = document.getElementById('fc-ranking').value;
+  const limit = fRanking === 'top10' ? 10 : 20;
+  
+  const exportData = currentTopCustomersData.map((c, idx) => ({
+    'Rank': idx + 1,
+    'Customer Name': c.name,
+    'Total Sales (₹)': c.total
+  }));
+  
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, `Top ${limit} Customers`);
+  XLSX.writeFile(wb, `Top_${limit}_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast(`Top ${limit} customers exported successfully!`, 'success');
+};
+
+/* Export Bottom 10 Customers */
+window.exportBottomCustomers = () => {
+  if (!currentBottom10Data || currentBottom10Data.length === 0) {
+    showToast('No Bottom 10 data to export', 'warning');
+    return;
+  }
+  
+  const exportData = currentBottom10Data.map((c, idx) => ({
+    'Rank': idx + 1,
+    'Customer Name': c.name,
+    'Total Sales (₹)': c.total
+  }));
+  
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Bottom 10 Customers');
+  XLSX.writeFile(wb, `Bottom_10_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast('Bottom 10 customers exported successfully!', 'success');
+};
+
+/* Export Selected Customer Daily Sales */
+window.exportSelectedCustomerDaily = () => {
+  const fCustomer = document.getElementById('fc-customer').value;
+  if (!fCustomer) {
+    showToast('Please select a customer first', 'warning');
+    return;
+  }
+  
+  const fMonth = document.getElementById('fc-month-daily').value;
+  const fDept = document.getElementById('fc-dept-daily').value;
+  const fTer = document.getElementById('fc-territory-daily').value;
+  
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
+    (fTer === 'all' || r.territory === fTer) &&
+    r.customer === fCustomer
+  );
+  
+  if (filtered.length === 0) {
+    showToast(`No sales data for ${fCustomer}`, 'warning');
+    return;
+  }
+  
+  const dayMap = new Map();
+  filtered.forEach(({ date, amt }) => {
+    const dateKey = getDateKey(date);
+    dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + amt);
+  });
+  
+  let exportData = [];
+  
+  if (fMonth === 'all') {
+    const dates = [...new Set(filtered.map(r => getDateKey(r.date)))].sort();
+    exportData = dates.map(d => {
+      const [year, month, day] = d.split('-');
+      return {
+        'Date': `${day} ${MONTHS[parseInt(month)-1]} ${year}`,
+        'Amount (₹)': dayMap.get(d) || 0
+      };
+    });
+  } else {
+    const [mon, yr] = fMonth.split(' ');
+    const monthIndex = MONTHS.indexOf(mon);
+    const year = +yr;
+    const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+    
+    for (let d = 1; d <= totalDays; d++) {
+      const dateKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      exportData.push({
+        'Date': `${String(d).padStart(2, '0')} ${mon} ${year}`,
+        'Amount (₹)': dayMap.get(dateKey) || 0
+      });
+    }
+  }
+  
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, `${fCustomer} Daily Sales`);
+  XLSX.writeFile(wb, `${fCustomer.replace(/[^a-zA-Z0-9]/g, '_')}_Daily_Sales_${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast(`${fCustomer} daily sales exported successfully!`, 'success');
+};
+
+/* Section Break - Day-wise Sales */
+const renderDaily = () => {
+  const fMonth = document.getElementById('f-month').value;
+  const fDept = document.getElementById('f-dept').value;
+  const fTer = document.getElementById('f-territory').value;
+  if (!fMonth) return;
+
+  const filtered = allRows.filter(r =>
+    (fMonth === 'all' || monthKey(r.date) === fMonth) &&
+    (fDept === 'all' || r.unit === fDept) &&
+    (fTer === 'all' || r.territory === fTer)
+  );
+
+  if (filtered.length === 0 && fMonth !== 'all') {
+    showToast(`No sales data for ${fMonth} with selected filters`, 'warning');
+    document.getElementById('day-count').textContent = `No sales data for selected period`;
+    mkChart('chart-daily', 'bar', { labels: [], datasets: [] }, {});
+    return;
+  }
+
+  const dayMap = new Map();
+  filtered.forEach(({ date, amt }) => {
+    const dateKey = getDateKey(date);
+    dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + amt);
+  });
+
+  if (fMonth === 'all') {
+    if (filtered.length === 0) {
+      document.getElementById('day-count').textContent = `No sales data`;
+      mkChart('chart-daily', 'bar', { labels: [], datasets: [] }, {});
+      return;
+    }
+    
+    const dates = [...new Set(filtered.map(r => getDateKey(r.date)))].sort();
+    const labels = dates.map(d => {
+      const [year, month, day] = d.split('-');
+      return `${day} ${MONTHS[parseInt(month)-1]} ${year}`;
+    });
+    const data = dates.map(d => dayMap.get(d) || 0);
+    
+    const salesDays = data.filter(v => v > 0).length;
+    document.getElementById('day-count').textContent = `${salesDays} days with sales · ${data.length - salesDays} days ₹0 · Total: ${fmt(data.reduce((a,b)=>a+b,0))}`;
+
+    mkChart('chart-daily', 'bar', {
+      labels: labels,
+      datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
+    }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
+    return;
+  }
+
+  const [mon, yr] = fMonth.split(' ');
+  const monthIndex = MONTHS.indexOf(mon);
+  const year = +yr;
+  const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+
+  const labels = [];
+  const data = [];
+  
+  for (let d = 1; d <= totalDays; d++) {
+    const dateKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const displayLabel = `${String(d).padStart(2, '0')} ${mon} ${year}`;
+    labels.push(displayLabel);
+    data.push(dayMap.get(dateKey) || 0);
+  }
+
+  currentDailyChartData = { labels: labels, data: data };
+  const salesDays = data.filter(v => v > 0).length;
+  const totalSales = data.reduce((a,b) => a + b, 0);
+  document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0 · Total: ${fmt(totalSales)}`;
+
+  mkChart('chart-daily', 'bar', {
+    labels,
+    datasets: [{ label: 'Sales', data, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, maxBarThickness: 40 }]
+  }, { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: tooltipCfg }, scales: scaleCfg() });
+  
+  if (salesDays > 0) {
+    showToast(`Showing ${fMonth} data - ${salesDays} days with sales`, 'info');
+  } else {
+    showToast(`No sales data for ${fMonth} with selected filters`, 'warning');
+  }
+};
+
+/*Customer Daily */
 const renderCustomerDaily = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
@@ -1168,27 +1597,30 @@ const renderCustomerDaily = () => {
     r.customer === fCustomer
   );
 
-  const dayMap = {};
+  const dayMap = new Map();
+  filtered.forEach(({ date, amt }) => {
+    const dateKey = getDateKey(date);
+    dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + amt);
+  });
 
   if (fMonth === 'all') {
-    filtered.forEach(({ date, amt }) => {
-      const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      dayMap[dk] = round2((dayMap[dk] || 0) + amt);
+    if (filtered.length === 0) {
+      showToast(`No sales data for ${fCustomer} in selected period`, 'warning');
+      mkChart('chart-customer-daily', 'bar', { labels: [], datasets: [] }, {});
+      return;
+    }
+    
+    const dates = [...new Set(filtered.map(r => getDateKey(r.date)))].sort();
+    const labels = dates.map(d => {
+      const [year, month, day] = d.split('-');
+      return `${day} ${MONTHS[parseInt(month)-1]} ${year}`;
     });
-
-    const allDates = Object.keys(dayMap).sort((a, b) => {
-      const partsA = a.split(' ');
-      const partsB = b.split(' ');
-      const dateA = new Date(parseInt(partsA[2]), MONTHS.indexOf(partsA[1]), parseInt(partsA[0]));
-      const dateB = new Date(parseInt(partsB[2]), MONTHS.indexOf(partsB[1]), parseInt(partsB[0]));
-      return dateA - dateB;
-    });
-
-    const data = allDates.map(d => dayMap[d] || 0);
-    currentCustomerDailyData = { labels: allDates, data };
-
+    const data = dates.map(d => dayMap.get(d) || 0);
+    
+    const totalSales = data.reduce((a,b) => a+b, 0);
+    
     mkChart('chart-customer-daily', 'bar', {
-      labels: allDates,
+      labels: labels,
       datasets: [{
         label: fCustomer,
         data,
@@ -1204,6 +1636,10 @@ const renderCustomerDaily = () => {
       plugins: { legend: { display: false }, tooltip: tooltipCfg },
       scales: scaleCfg()
     });
+    
+    if (filtered.length > 0) {
+      showToast(`${fCustomer}: ${filtered.length} transactions, Total ${fmt(totalSales)}`, 'success');
+    }
     return;
   }
 
@@ -1212,19 +1648,19 @@ const renderCustomerDaily = () => {
   const year = +yr;
   const totalDays = new Date(year, monthIndex + 1, 0).getDate();
 
-  filtered.forEach(({ date, amt }) => {
-    const dk = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    dayMap[dk] = round2((dayMap[dk] || 0) + amt);
-  });
-
-  const labels = [], data = [];
+  const labels = [];
+  const data = [];
+  
   for (let d = 1; d <= totalDays; d++) {
-    const fullDate = new Date(year, monthIndex, d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    labels.push(fullDate);
-    data.push(dayMap[fullDate] || 0);
+    const dateKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const displayLabel = `${String(d).padStart(2, '0')} ${mon} ${year}`;
+    labels.push(displayLabel);
+    data.push(dayMap.get(dateKey) || 0);
   }
 
   currentCustomerDailyData = { labels, data };
+  const salesDays = data.filter(v => v > 0).length;
+  const totalSales = data.reduce((a,b) => a+b, 0);
 
   mkChart('chart-customer-daily', 'bar', {
     labels,
@@ -1243,9 +1679,13 @@ const renderCustomerDaily = () => {
     plugins: { legend: { display: false }, tooltip: tooltipCfg },
     scales: scaleCfg()
   });
+  
+  if (salesDays > 0) {
+    showToast(`${fCustomer}: ${salesDays} days with sales in ${fMonth}, Total ${fmt(totalSales)}`, 'success');
+  } else {
+    showToast(`${fCustomer} has no sales in ${fMonth}`, 'warning');
+  }
 };
-
-/* Populate Customer Dropdown - EXACT NAMES */
 const populateCustomerDropdown = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
@@ -1260,16 +1700,19 @@ const populateCustomerDropdown = () => {
   const customers = [...new Set(filtered.map(r => r.customer).filter(c => c && c !== ''))].sort();
 
   const sel = document.getElementById('fc-customer');
+  const oldValue = sel.value;
   sel.innerHTML = '<option value="">-- Select Customer (' + customers.length + ') --</option>' +
     customers.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+  
+  if (oldValue && customers.includes(oldValue)) {
+    sel.value = oldValue;
+  }
 };
-
-/* Populate Months */
 const populateMonths = (rows) => {
   const seen = new Set();
   rows.forEach(r => seen.add(monthKey(r.date)));
-  const sorted = [...seen].sort((a, b) => {
-    const toMs = s => { const [m, y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); };
+  const sorted = [...seen].sort((a,b) => {
+    const toMs = s => { const [m,y] = s.split(' '); return new Date(+y, MONTHS.indexOf(m)); };
     return toMs(a) - toMs(b);
   });
   const monthsHTML = '<option value="all">All Months</option>' + sorted.map(m => `<option value="${m}">${m}</option>`).join('');
@@ -1282,8 +1725,6 @@ const populateMonths = (rows) => {
   document.getElementById('fc-month').value = 'all';
   document.getElementById('fc-month-daily').value = 'all';
 };
-
-/* Export Functions */
 window.exportToExcel = (type) => {
   const wb = XLSX.utils.book_new();
 
@@ -1298,6 +1739,7 @@ window.exportToExcel = (type) => {
     }));
     const ws = XLSX.utils.json_to_sheet(monthlyArray);
     XLSX.utils.book_append_sheet(wb, ws, 'Monthly Sales');
+    showToast('Monthly data exported successfully!', 'success');
   } else if (type === 'daily' && currentDailyChartData) {
     const dailyArray = currentDailyChartData.labels.map((label, idx) => ({
       Date: label,
@@ -1305,6 +1747,7 @@ window.exportToExcel = (type) => {
     }));
     const ws = XLSX.utils.json_to_sheet(dailyArray);
     XLSX.utils.book_append_sheet(wb, ws, 'Daily Sales');
+    showToast('Daily data exported successfully!', 'success');
   } else if (type === 'customer-overview' && currentCustomerOverviewData) {
     const overviewArray = currentCustomerOverviewData.map(c => ({
       'Customer Name': c.name,
@@ -1312,15 +1755,14 @@ window.exportToExcel = (type) => {
     }));
     const ws = XLSX.utils.json_to_sheet(overviewArray);
     XLSX.utils.book_append_sheet(wb, ws, 'Customer Overview');
+    showToast('Customer overview exported successfully!', 'success');
   } else {
-    alert('No data to export');
+    showToast('No data to export. Please load data first.', 'warning');
     return;
   }
 
   XLSX.writeFile(wb, `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
-
-/* Manual Refresh */
 window.manualRefresh = () => {
   const loader = document.getElementById('loader');
   loader.style.display = 'flex';
@@ -1343,50 +1785,94 @@ window.manualRefresh = () => {
       const activeTab = document.querySelector('.tab.active').dataset.tab;
       if (activeTab === 'daily') renderDaily();
       if (activeTab === 'customer') {
+        renderTopCustomersHorizontal();
+        renderBottom10Horizontal();
         renderCustomerOverview();
         renderCustomerDaily();
       }
 
       loader.classList.add('hide');
       setTimeout(() => loader.style.display = 'none', 500);
+      showToast(`Data refreshed! ${allRows.length} valid rows loaded.`, 'success');
     })
     .catch(err => {
       loader.style.display = 'none';
       const box = document.getElementById('error');
       box.classList.add('show');
       box.querySelector('p').textContent = err.message;
+      showToast('Failed to load data. Please check console.', 'error');
     });
 };
 
-/* Event Listeners */
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.dataset.tab;
-    document.getElementById('tab-monthly').style.display = tab === 'monthly' ? 'block' : 'none';
-    document.getElementById('tab-daily').style.display = tab === 'daily' ? 'block' : 'none';
-    document.getElementById('tab-customer').style.display = tab === 'customer' ? 'block' : 'none';
+/* Tab Switching Logic */
+window.switchTab = (tabId) => {
+  const current = document.querySelector('.tab-view:not([style*="display: none"])');
+  const next = document.getElementById(`tab-${tabId}`);
+  if (current === next) return;
 
-    if (tab === 'daily') renderDaily();
-    if (tab === 'customer') {
+  if (current) {
+    current.classList.remove('anim-in');
+    current.classList.add('anim-out');
+    
+    setTimeout(() => {
+      current.style.display = 'none';
+      if (next) {
+        next.style.display = 'block';
+        next.classList.remove('anim-out');
+        next.classList.add('anim-in');
+      }
+      if (tabId === 'daily') renderDaily();
+      if (tabId === 'customer') {
+        renderTopCustomersHorizontal();
+        renderBottom10Horizontal();
+        renderCustomerOverview();
+        renderCustomerDaily();
+      }
+      showToast(`Switched to ${tabId === 'monthly' ? 'Monthly Overview' : tabId === 'daily' ? 'Day-wise Sales' : 'Customer Analysis'}`, 'info');
+    }, 500);
+  } else if (next) {
+    next.style.display = 'block';
+    next.classList.add('anim-in');
+    if (tabId === 'daily') renderDaily();
+    if (tabId === 'customer') {
+      renderTopCustomersHorizontal();
+      renderBottom10Horizontal();
       renderCustomerOverview();
       renderCustomerDaily();
     }
+  }
+};
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    window.switchTab(btn.dataset.tab);
   });
 });
 
-// Daily filters
+/* Listeners for Daily tab */
 ['f-month', 'f-dept', 'f-territory'].forEach(id =>
-  document.getElementById(id)?.addEventListener('change', renderDaily)
+  document.getElementById(id)?.addEventListener('change', () => {
+    renderDaily();
+    const month = document.getElementById('f-month').value;
+    const dept = document.getElementById('f-dept').value;
+    const ter = document.getElementById('f-territory').value;
+    showToast(`Filters applied: ${month !== 'all' ? month : 'All Months'} | ${dept !== 'all' ? dept : 'All Units'} | ${ter !== 'all' ? ter : 'All Territories'}`, 'info');
+  })
 );
 
-// Customer overview filters
+/* Listeners for Customer tab - update all charts */
 ['fc-ranking', 'fc-month', 'fc-dept', 'fc-territory'].forEach(id =>
-  document.getElementById(id)?.addEventListener('change', renderCustomerOverview)
+  document.getElementById(id)?.addEventListener('change', () => {
+    renderTopCustomersHorizontal();
+    renderBottom10Horizontal();
+    renderCustomerOverview();
+  })
 );
 
-// Customer daily filters
+/* Listeners for Customer Daily */
 ['fc-month-daily', 'fc-dept-daily', 'fc-territory-daily'].forEach(id =>
   document.getElementById(id)?.addEventListener('change', () => {
     populateCustomerDropdown();
@@ -1396,7 +1882,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 
 document.getElementById('fc-customer')?.addEventListener('change', renderCustomerDaily);
 
-/* Initial Load */
+/* load data  */
 const loadData = () => {
   fetch('data.xlsx?' + Date.now())
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
@@ -1416,17 +1902,39 @@ const loadData = () => {
       renderMonthly(allRows);
       populateMonths(allRows);
       populateCustomerDropdown();
+      renderTopCustomersHorizontal();
+      renderBottom10Horizontal();
       renderCustomerOverview();
+      
+      showToast(`Dashboard loaded! ${allRows.length} transactions loaded.`, 'success');
     })
     .catch(err => {
       document.getElementById('loader').style.display = 'none';
       const box = document.getElementById('error');
       box.classList.add('show');
       box.querySelector('p').textContent = err.message;
+      showToast('Failed to load data. Make sure data.xlsx exists.', 'error');
     });
 };
 
 loadData();
+
+window.switchToMonthlyTab = () => {
+  const monthlyTab = document.querySelector('.tab[data-tab="monthly"]');
+  if (monthlyTab) monthlyTab.click();
+};
+
+document.querySelector('header h1').addEventListener('click', window.switchToMonthlyTab);
+
+document.querySelectorAll('.btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.remove('rotate-icon');
+    void btn.offsetWidth;
+    btn.classList.add('rotate-icon');
+    setTimeout(() => btn.classList.remove('rotate-icon'), 600);
+  });
+});
+
 </script>
 </body>
 </html>
