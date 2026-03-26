@@ -57,12 +57,12 @@ body {
 }/* Fullscreen Loader Container */
 #loader-lightning {
   position: fixed;
-  inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0 */
+  inset: 0;
   background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
-  align-items: center;   /* horizontal center */
-  justify-content: center; /* vertical center */
+  align-items: center;
+  justify-content: center;
   gap: 24px;
   z-index: 999;
   transition: opacity 0.6s ease, visibility 0.6s ease;
@@ -778,12 +778,6 @@ header h1:hover { opacity: 0.8; }
         <div class="canvas-container horizontal"><canvas id="chart-bottom-horizontal"></canvas></div>
       </div>
 
-      <!-- Original Vertical Bar Chart ( -->
-      <!-- <div class="card">
-        <h3>Customer Sales Overview (Vertical Bar)</h3>
-        <div class="canvas-container"><canvas id="chart-customer-overview"></canvas></div>
-      </div> -->
-
       <!-- Customer Daily Sales Section -->
       <div class="filters" style="margin-top:20px">
         <div><label>Select Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
@@ -855,7 +849,7 @@ function showToast(message, type = 'success') {
   }
 }
 
-/* Tooltips */
+/* Tooltips - FIXED: Properly gets the raw value and formats it */
 const tooltipCfg = {
   backgroundColor: '#ffffff',
   borderColor: '#e2e8f0',
@@ -864,8 +858,34 @@ const tooltipCfg = {
   bodyColor: '#000000',
   titleFont: { family: 'Inter', weight: 'bold', size: 13 },
   bodyFont: { family: 'Inter', weight: '500', size: 12 },
-  callbacks: { label: (ctx) => ' ' + fmt(round2(ctx.parsed.x ?? ctx.parsed.y ?? ctx.parsed)) }
+  callbacks: { 
+    label: (ctx) => {
+      // Get the raw value from the dataset
+      let rawValue = ctx.raw;
+      // If raw is not available, try parsed value
+      if (rawValue === undefined) {
+        rawValue = ctx.parsed !== undefined ? (ctx.parsed.x ?? ctx.parsed.y ?? ctx.parsed) : 0;
+      }
+      return ' ' + formatTooltipValue(rawValue);
+    }
+  }
 };
+
+/* Format function specifically for tooltips */
+function formatTooltipValue(v) {
+  if (v === undefined || v === null) return '0.00';
+  v = round2(v);
+  // For values >= 1 crore (10 million)
+  if (v >= 10000000) {
+    return (v / 10000000).toFixed(2) + ' Cr';
+  }
+  // For values >= 1 lakh (100,000)
+  if (v >= 100000) {
+    return (v / 100000).toFixed(2) + ' L';
+  }
+  // For smaller values, show with ₹ symbol
+  return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 /* Axes */
 const axisCfg = {
@@ -877,7 +897,7 @@ const axisCfg = {
 const horizontalScaleCfg = () => ({
   x: {
     grid: { color: GRID, lineWidth: 0.5 },
-    ticks: { ...axisCfg, callback: v => fmt(v) },
+    ticks: { ...axisCfg, callback: v => formatTooltipValue(v) },
     border: { display: false }
   },
   y: {
@@ -896,7 +916,7 @@ const scaleCfg = () => ({
   },
   y: {
     grid: { color: GRID, lineWidth: 0.5 },
-    ticks: { ...axisCfg, callback: v => fmt(v) },
+    ticks: { ...axisCfg, callback: v => formatTooltipValue(v) },
     border: { display: false }
   }
 });
@@ -914,7 +934,7 @@ const mkChart = (id, type, data, opts) => {
 /* Math Util */
 const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
 
-/* Currency UI */
+/* Currency UI - Keep original for KPI display */
 const fmt = (v) => {
   v = round2(v);
   if (v >= 1e7) return (v/1e7).toFixed(2) + ' Cr';
@@ -1156,7 +1176,7 @@ const renderTopCustomersHorizontal = () => {
         ...tooltipCfg,
         callbacks: {
           title: (ctx) => customers[ctx[0].dataIndex].name,
-          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.x)
+          label: (ctx) => ' Total Sales: ' + formatTooltipValue(ctx.raw)
         }
       }
     },
@@ -1195,7 +1215,7 @@ const renderBottom10Horizontal = () => {
         ...tooltipCfg,
         callbacks: {
           title: (ctx) => customers[ctx[0].dataIndex].name,
-          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.x)
+          label: (ctx) => ' Total Sales: ' + formatTooltipValue(ctx.raw)
         }
       }
     },
@@ -1236,7 +1256,7 @@ const renderCustomerOverview = () => {
         ...tooltipCfg,
         callbacks: {
           title: (ctx) => customers[ctx[0].dataIndex].name,
-          label: (ctx) => ' Total Sales: ' + fmt(ctx.parsed.y)
+          label: (ctx) => ' Total Sales: ' + formatTooltipValue(ctx.raw)
         }
       }
     },
@@ -1398,7 +1418,7 @@ const renderDaily = () => {
     const data = dates.map(d => dayMap.get(d) || 0);
     
     const salesDays = data.filter(v => v > 0).length;
-    document.getElementById('day-count').textContent = `${salesDays} days with sales · ${data.length - salesDays} days ₹0 · Total: ${fmt(data.reduce((a,b)=>a+b,0))}`;
+    document.getElementById('day-count').textContent = `${salesDays} days with sales · ${data.length - salesDays} days ₹0 · Total: ${formatTooltipValue(data.reduce((a,b)=>a+b,0))}`;
 
     mkChart('chart-daily', 'bar', {
       labels: labels,
@@ -1425,7 +1445,7 @@ const renderDaily = () => {
   currentDailyChartData = { labels: labels, data: data };
   const salesDays = data.filter(v => v > 0).length;
   const totalSales = data.reduce((a,b) => a + b, 0);
-  document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0 · Total: ${fmt(totalSales)}`;
+  document.getElementById('day-count').textContent = `${salesDays} days with sales · ${totalDays - salesDays} days ₹0 · Total: ${formatTooltipValue(totalSales)}`;
 
   mkChart('chart-daily', 'bar', {
     labels,
@@ -1499,7 +1519,7 @@ const renderCustomerDaily = () => {
     });
     
     if (filtered.length > 0) {
-      showToast(`${fCustomer}: ${filtered.length} transactions, Total ${fmt(totalSales)}`, 'success');
+      showToast(`${fCustomer}: ${filtered.length} transactions, Total ${formatTooltipValue(totalSales)}`, 'success');
     }
     return;
   }
@@ -1542,7 +1562,7 @@ const renderCustomerDaily = () => {
   });
   
   if (salesDays > 0) {
-    showToast(`${fCustomer}: ${salesDays} days with sales in ${fMonth}, Total ${fmt(totalSales)}`, 'success');
+    showToast(`${fCustomer}: ${salesDays} days with sales in ${fMonth}, Total ${formatTooltipValue(totalSales)}`, 'success');
   } else {
     showToast(`${fCustomer} has no sales in ${fMonth}`, 'warning');
   }
