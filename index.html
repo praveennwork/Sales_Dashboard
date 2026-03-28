@@ -17,109 +17,119 @@
 :root {
   --bg: #f8fafc;
   --bg2: #ffffff;
-  --bg3: #f1f5f9;
-  --border: #e2e8f0;
-  --border-hover: #cbd5e1;
-  --text: #0f172a;
-  --muted: #64748b;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #8b5cf6;
-
+  --bg3: #f8fafc;
+  --border: #f1f5f9;
+  --border-hover: #e2e8f0;
+  --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --text: #1e293b;
+  --muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #e11d48;
+  --info: #c026d3;
   /* Dept Colors */
-  --imd: #3b82f6;
+  --imd: #4f46e5;
   --dcd: #f59e0b;
-  --trd: #8b5cf6;
+  --trd: #d946ef;
   --med: #10b981;
 
   /* Zone Colors */
-  --export: #06b6d4;
-  --domestic: #ef4444;
-  --general: #f97316;
-  --shadow-float: 0 10px 15px -3px rgba(0,0,0,0.05);
-  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
-  --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+  --export: #0ea5e9;
+  --domestic: #f43f5e;
+  --shadow-float: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 body {
-  background: var(--bg);
+  background: #ffffff;
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   width: 100%;
   -webkit-font-smoothing: antialiased;
-}/* Fullscreen Loader Container */
+}
+
+/* Animated Background Mesh */
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.blob {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: var(--accent);
+  filter: blur(80px);
+  opacity: 0.1;
+  border-radius: 50%;
+  animation: move 20s infinite alternate;
+}
+.blob-1 { top: -150px; right: -150px; background: var(--trd); animation-duration: 25s; }
+.blob-2 { bottom: -150px; left: -150px; background: var(--accent); animation-duration: 30s; animation-delay: -5s; }
+@keyframes move {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(100px, 100px) scale(1.2); }
+}
+
+/* Fullscreen Loader Container */
 #loader-lightning {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  z-index: 999;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
+  gap: 40px;
+  z-index: 9999;
+  transition: opacity 0.8s var(--ease), visibility 0.8s;
 }
 
 #loader-lightning.hide {
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
 }
 
-/* Lightning Bars */
-.loader-lightning {
-  display: flex;
-  gap: 6px;
+/* Data-Stream Loader Animation */
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 5px solid var(--bg3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.loader-lightning span {
-  width: 6px;
-  height: 30px;
-  background: var(--accent, #3b82f6);
-  animation: lightning 0.8s infinite;
+/* Cascading Entry Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  animation: revealIn 0.8s var(--ease) forwards;
+  animation-delay: calc(var(--order, 0) * 0.1s);
+}
+@keyframes revealIn {
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.loader-lightning span:nth-child(2) { animation-delay: 0.2s; background: #f59e0b; }
-.loader-lightning span:nth-child(3) { animation-delay: 0.4s; background: #10b981; }
-.loader-lightning span:nth-child(4) { animation-delay: 0.6s; background: #8b5cf6; }
-
-@keyframes lightning {
-  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
-  50% { transform: scaleY(1.2); opacity: 1; }
-}
-
-
-.loader-lightning span:nth-child(2){animation-delay:0.2s;background-color: #f59e0b;}
-.loader-lightning span:nth-child(3){animation-delay:0.4s;background-color: #10b981;}
-.loader-lightning span:nth-child(4){animation-delay:0.6s;background-color: #8b5cf6;}
-
-/* Loader Text */
-.loader-text {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 2px;
+.loader-main-text {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 4px;
   text-transform: uppercase;
-  background: linear-gradient(90deg, var(--accent, #3b82f6), #f59e0b, #10b981, #8b5cf6);
-  background-size: 300% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: textShine 2.5s linear infinite;
+  color: var(--muted);
+  opacity: 0.8;
 }
-
-@keyframes textShine {
-  0% { background-position: 0% center; }
-  100% { background-position: 300% center; }
-}
-
-
 #error {
   display: none;
   position: fixed;
@@ -149,7 +159,7 @@ body {
   display: inline-block;
 }
 header {
-  background: var(--bg2);
+  background: rgba(255, 255, 255, 0.8);
   border-bottom: 1px solid var(--border);
   padding: 16px 24px;
   display: flex;
@@ -158,6 +168,7 @@ header {
   flex-wrap: wrap;
   gap: 12px;
   box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -209,17 +220,53 @@ header h1 span { color: var(--accent); }
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
+/* Button Morphing & Loading */
+.btn.loading {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  color: transparent !important;
+  overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn.loading::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  position: absolute;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn.success-state {
+  background: var(--success) !important;
+  transform: scale(1.05);
+}
+.btn svg.icon-drop {
+  animation: iconDrop 0.4s var(--ease);
+}
+@keyframes iconDrop {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
 
 .btn:hover {
   background: var(--accent-hover);
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow: var(--shadow-md);
 }
 
-.btn:active { transform: translateY(0); }
+.btn:active { transform: translateY(0) scale(0.95); }
 
-.btn svg { width: 14px; height: 14px; fill: currentColor; }
-
+.btn svg { width: 14px; height: 14px; fill: currentColor; transition: transform 0.4s var(--ease); }
+.btn:hover svg { transform: rotate(-10deg) scale(1.1); }
 .btn-success { background: #10b981; }
 .btn-success:hover { background: #059669; }
 
@@ -237,9 +284,9 @@ header h1 span { color: var(--accent); }
 }
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
-  padding: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  padding: 12px 24px;
   width: 100%;
 }
 
@@ -247,12 +294,18 @@ header h1 span { color: var(--accent); }
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 18px 16px;
+  padding: 12px 14px;
   box-shadow: var(--shadow-float);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s var(--ease);
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0s);
+  border-bottom: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .kpi::before {
@@ -269,26 +322,27 @@ header h1 span { color: var(--accent); }
 }
 
 .kpi:hover {
-  transform: translateY(-3px);
+  transform: translateY(-8px) scale(1.02);
   box-shadow: var(--shadow-md);
   border-color: var(--border-hover);
+  background: var(--bg);
 }
 
 .kpi:hover::before { left: 100%; }
 
 .kpi .label {
-  font-size: clamp(10px, 2.2vw, 12px);
+  font-size: clamp(8px, 1.8vw, 10px);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 600;
   position: relative;
   z-index: 2;
 }
 
 .kpi .val {
-  font-size: clamp(18px, 4vw, 24px);
+  font-size: clamp(14px, 3vw, 18px);
   font-weight: 700;
   line-height: 1.2;
   display: inline-block;
@@ -299,13 +353,36 @@ header h1 span { color: var(--accent); }
 }
 
 .kpi .sub {
-  font-size: clamp(10px, 2.2vw, 12px);
-  color: var(--muted);
-  margin-top: 8px;
+  font-size: clamp(8px, 1.8vw, 10px);
+  color: var(--text);
+  margin-top: 4px;
   font-weight: 500;
   position: relative;
   z-index: 2;
 }
+.kpi:active { transform: scale(0.95); }
+
+.kpi .percentage-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.3s var(--ease);
+  z-index: 3;
+  border: 1px solid var(--border);
+}
+.kpi:hover .percentage-badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .tabs {
   display: flex;
   gap: 6px;
@@ -315,6 +392,16 @@ header h1 span { color: var(--accent); }
   overflow-x: auto;
   scrollbar-width: thin;
   width: 100%;
+  position: relative;
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: all 0.4s var(--ease);
+  z-index: 1;
 }
 
 .tab {
@@ -330,6 +417,7 @@ header h1 span { color: var(--accent); }
   transition: all 0.2s;
   white-space: nowrap;
   flex-shrink: 0;
+  z-index: 2;
 }
 
 .tab:hover { color: var(--text); }
@@ -409,11 +497,13 @@ header h1 span { color: var(--accent); }
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 24px;
   box-shadow: var(--shadow-float);
   width: 100%;
-  transition: box-shadow 0.2s;
+  transition: all 0.5s var(--ease);
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .card:hover { box-shadow: var(--shadow); }
@@ -449,6 +539,7 @@ header h1 span { color: var(--accent); }
   background: var(--bg);
   border-radius: 12px;
   border: 1px solid var(--border);
+  transition: transform 0.4s var(--ease);
   padding: 16px;
 }
 
@@ -459,6 +550,15 @@ canvas {
   display: block;
   width: 100% !important;
   height: auto !important;
+}
+
+/* Content Fade Animation */
+.content-fade {
+  animation: contentFadeIn 0.5s var(--ease);
+}
+@keyframes contentFadeIn {
+  from { opacity: 0.5; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @media (max-width: 900px) {
   .two-col { grid-template-columns: 1fr; gap: 20px; }
@@ -586,6 +686,21 @@ header h1:hover { opacity: 0.8; }
   position: relative;
 }
 
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(0,0,0,0.1);
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress 4s linear forwards;
+}
+@keyframes toastProgress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 .toast.toast-out {
   animation: toastSlideOut 0.3s ease forwards;
 }
@@ -648,12 +763,11 @@ header h1:hover { opacity: 0.8; }
 </style>
 </head>
 <body>
+ <div class="bg-mesh"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
  <div id="loader">
 <div id="loader-lightning">
-  <div class="loader-lightning">
-    <span></span><span></span><span></span><span></span>
-  </div>
-  <div class="loader-text">Loading the Dashboard ....</div>
+  <div class="spinner"></div>
+  <div class="loader-main-text">LOADING THE G-PLAST SALES DASHBOARD</div>
 </div>
 </div>
 <!-- error  -->
@@ -681,10 +795,12 @@ header h1:hover { opacity: 0.8; }
   </header>
 
   <!-- KPI Track -->
-  <div class="kpi-row" id="kpi-row"></div>
+  <div class="kpi-row reveal" style="--order: 1" id="kpi-row"></div>
+  <div class="kpi-row reveal" style="--order: 2" id="kpi-row-secondary" style="padding-top: 0;"></div>
 
   <!-- Tabs -->
-  <div class="tabs">
+  <div class="tabs reveal" style="--order: 3">
+    <div class="tab-indicator" id="tab-indicator"></div>
     <button class="tab active" data-tab="monthly">Monthly Overview</button>
     <button class="tab" data-tab="daily">Day-wise</button>
     <button class="tab" data-tab="customer">Customer Analysis</button>
@@ -694,7 +810,7 @@ header h1:hover { opacity: 0.8; }
   <div id="content">
     <!-- Monthly -->
     <div id="tab-monthly" class="tab-view">
-      <div class="export-buttons">
+      <div class="export-buttons reveal" style="--order: 4">
         <button class="btn btn-success" onclick="exportToExcel('monthly')">
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
@@ -702,16 +818,16 @@ header h1:hover { opacity: 0.8; }
           Export Monthly
         </button>
       </div>
-      <div class="card">
+      <div class="card reveal" style="--order: 5">
         <h3>Combined All Units Monthly Sales</h3>
         <div class="canvas-container"><canvas id="chart-monthly-total"></canvas></div>
       </div>
       <div class="two-col">
-        <div class="card">
+        <div class="card reveal" style="--order: 6">
           <h3>Stacked by Units</h3>
           <div class="canvas-container"><canvas id="chart-monthly-stack"></canvas></div>
         </div>
-        <div class="card">
+        <div class="card reveal" style="--order: 7">
           <h3>Department Share</h3>
           <div class="canvas-container"><canvas id="chart-pie"></canvas></div>
         </div>
@@ -720,7 +836,7 @@ header h1:hover { opacity: 0.8; }
 
     <!-- Daily Tab  -->
     <div id="tab-daily" style="display:none;" class="tab-view">
-      <div class="export-buttons">
+      <div class="export-buttons reveal">
         <button class="btn btn-success" onclick="exportToExcel('daily')">
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
@@ -728,13 +844,13 @@ header h1:hover { opacity: 0.8; }
           Export Daily
         </button>
       </div>
-      <div class="filters">
+      <div class="filters reveal">
         <div><label>Month</label><select id="f-month"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="f-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
-        <div><label>Territory</label><select id="f-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <div><label>Territory</label><select id="f-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option></select></div>
         <span id="day-count"></span>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <h3>Day-wise Sales</h3>
         <div class="canvas-container medium"><canvas id="chart-daily"></canvas></div>
       </div>
@@ -742,7 +858,7 @@ header h1:hover { opacity: 0.8; }
 
     <!-- Customer Tab -->
     <div id="tab-customer" style="display:none;" class="tab-view">
-      <div class="export-buttons">
+      <div class="export-buttons reveal">
         <button class="btn btn-success" onclick="exportToExcel('customer-overview')">
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
@@ -750,19 +866,19 @@ header h1:hover { opacity: 0.8; }
           Export Overview
         </button>
       </div>
-      <div class="filters">
+      <div class="filters reveal">
         <div><label>Ranking</label><select id="fc-ranking"><option value="top10">Top 10 Customers</option><option value="top20">Top 20 Customers</option></select></div>
         <div><label>Month</label><select id="fc-month"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="fc-dept"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
-        <div><label>Territory</label><select id="fc-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <div><label>Territory</label><select id="fc-territory"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option></select></div>
         <span id="customer-count"></span>
       </div>
       
       <!-- Top Customers Horizontal Chart -->
-      <div class="card">
+      <div class="card reveal">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
           <h3>🏆 Top Customers (Horizontal Bar)</h3>
-          <button class="btn btn-success" onclick="exportTopCustomers()" style="background: #10b981; padding: 6px 14px;">
+          <button class="btn btn-success" onclick="exportTopCustomers(event)" style="background: #10b981; padding: 6px 14px;">
             <svg viewBox="0 0 24 24" width="14" height="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
             Export Top Customers
           </button>
@@ -771,10 +887,10 @@ header h1:hover { opacity: 0.8; }
       </div>
       
       <!-- Bottom 10 Horizontal Chart -->
-      <div class="card">
+      <div class="card reveal">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
           <h3>📉 Bottom 10 Customers (Horizontal Bar)</h3>
-          <button class="btn btn-success" onclick="exportBottomCustomers()" style="background: #f59e0b; padding: 6px 14px;">
+          <button class="btn btn-success" onclick="exportBottomCustomers(event)" style="background: #f59e0b; padding: 6px 14px;">
             <svg viewBox="0 0 24 24" width="14" height="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
             Export Bottom 10
           </button>
@@ -783,13 +899,13 @@ header h1:hover { opacity: 0.8; }
       </div>
 
       <!-- Customer Daily Sales Section -->
-      <div class="filters" style="margin-top:20px">
+      <div class="filters reveal" style="margin-top:20px">
         <div><label>Select Customer</label><select id="fc-customer"><option value="">Select Customer</option></select></div>
         <div><label>Month</label><select id="fc-month-daily"><option value="all">All Months</option></select></div>
         <div><label>Units</label><select id="fc-dept-daily"><option value="all">All Units</option><option value="IMD">IMD</option><option value="DCD">DCD</option><option value="TRD">TRD</option><option value="MED">MED</option></select></div>
-        <div><label>Territory</label><select id="fc-territory-daily"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option><option value="GENERAL">General</option></select></div>
+        <div><label>Territory</label><select id="fc-territory-daily"><option value="all">All</option><option value="EXPORT">Export</option><option value="DOMESTIC">Domestic</option></select></div>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
           <h3>Customer Day-wise Sales</h3>
           <button class="btn btn-success" onclick="exportSelectedCustomerDaily()" style="background: #8b5cf6; padding: 6px 14px;">
@@ -806,10 +922,10 @@ header h1:hover { opacity: 0.8; }
 <script>
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DEPTS = ['IMD','DCD','TRD','MED'];
-const DEPT_COLORS = { IMD: '#3b82f6', DCD: '#f59e0b', TRD: '#8b5cf6', MED: '#10b981' };
-const TER_COLORS = { EXPORT: '#06b6d4', DOMESTIC: '#ef4444', GENERAL: '#f97316' };
-const GRID = '#e5e7eb';
-const AXIS_TEXT = '#475569';
+const DEPT_COLORS = { IMD: '#4f46e5', DCD: '#f59e0b', TRD: '#d946ef', MED: '#10b981' };
+const TER_COLORS = { EXPORT: '#0ea5e9', DOMESTIC: '#f43f5e' };
+const GRID = '#f1f5f9';
+const AXIS_TEXT = '#94a3b8';
 
 /* Toast System with Close Button */
 function showToast(message, type = 'success') {
@@ -837,6 +953,9 @@ function showToast(message, type = 'success') {
   const closeBtn = '<svg class="toast-close" viewBox="0 0 24 24" fill="#64748b"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
   
   toast.innerHTML = icon + '<span class="toast-message">' + message + '</span>' + closeBtn;
+  const progress = document.createElement('div');
+  progress.className = 'toast-progress';
+  toast.appendChild(progress);
   container.appendChild(toast);
   
   const closeBtnElement = toast.querySelector('.toast-close');
@@ -932,7 +1051,21 @@ const charts = {};
 const mkChart = (id, type, data, opts) => {
   if (charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id);
-  if (ctx) charts[id] = new Chart(ctx, { type, data, options: opts });
+  if (ctx) {
+    // Force animation on every update
+    const animationOpts = {
+      animation: {
+        duration: 800,
+        easing: 'easeOutQuart',
+        delay: (context) => context.dataIndex * 20
+      }
+    };
+    charts[id] = new Chart(ctx, { 
+      type, 
+      data, 
+      options: { ...opts, ...animationOpts } 
+    });
+  }
 };
 
 /* Math Util */
@@ -945,6 +1078,24 @@ const fmt = (v) => {
   if (v >= 1e5) return (v/1e5).toFixed(2) + ' L';
   return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
+/* KPI Countup Animation */
+function animateKPI(id, start, end) {
+  const el = document.querySelector(`[data-kpi="${id}"] .val`);
+  if (!el) return;
+  
+  let startTimestamp = null;
+  const duration = 1000;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+    const current = easedProgress * (end - start) + start;
+    el.innerHTML = fmt(current);
+    if (progress < 1) window.requestAnimationFrame(step);
+  };
+  window.requestAnimationFrame(step);
+}
 
 /* Date Parser */
 const parseDate = (v) => {
@@ -979,7 +1130,6 @@ const normTerritory = (v) => {
   const s = String(v).toUpperCase().trim();
   if (s === 'EXPORT' || s === 'EXP') return 'EXPORT';
   if (s === 'DOMESTIC' || s === 'DOM') return 'DOMESTIC';
-  if (s === 'GENERAL' || s === 'GEN') return 'GENERAL';
   return s;
 };
 
@@ -996,7 +1146,6 @@ let currentCustomerDailyData = null;
 let currentTopCustomersData = [];
 let currentBottom10Data = [];
 
-/* Section Break */
 const parseExcel = (buf) => {
   const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true });
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -1029,27 +1178,60 @@ const parseExcel = (buf) => {
       customer: customer,
       amt: amount,
     };
-  }).filter(r => r.date && r.unit && r.amt > 0);
+  }).filter(r => r.date && r.unit && r.amt > 0 && r.territory !== 'GENERAL');
 };
+
 const renderKPI = (rows) => {
   const grand = round2(rows.reduce((s,r) => s+r.amt, 0));
-  const items = [
-    { label: 'Grand Total', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows · Excel: ' + totalExcelRows, key: 'grand' },
+  const exportTotal = round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0));
+  const domesticTotal = round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0));
+  
+  // Row 1: Grand Total + 4 Depts + Export + Import
+  const primaryItems = [
+    { label: 'Grand Total Sales', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows', key: 'grand' },
     ...DEPTS.map(d => {
       const v = round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0));
       return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v/grand*100).toFixed(1)+'%' : '—', key: d };
     }),
-    { label: 'Export', val: round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.EXPORT, sub: 'Export sales', key: 'EXPORT' },
-    { label: 'Domestic', val: round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.DOMESTIC, sub: 'Domestic sales', key: 'DOMESTIC' },
-    { label: 'General', val: round2(rows.filter(r => r.territory === 'GENERAL').reduce((s,r) => s+r.amt, 0)), color: TER_COLORS.GENERAL, sub: 'General sales', key: 'GENERAL' },
+    { label: 'Total Export', val: exportTotal, color: TER_COLORS.EXPORT, sub: 'All Units', key: 'EXPORT' },
+    { label: 'Total Import', val: domesticTotal, color: TER_COLORS.DOMESTIC, sub: 'All Units', key: 'DOMESTIC' }
   ];
-  document.getElementById('kpi-row').innerHTML = items.map(k =>
-    `<div class="kpi" data-kpi="${k.key}">
+
+  const secondaryItems = [];
+
+  DEPTS.forEach(d => {
+    const expVal = round2(rows.filter(r => r.unit === d && r.territory === 'EXPORT').reduce((s, r) => s + r.amt, 0));
+    const domVal = round2(rows.filter(r => r.unit === d && r.territory === 'DOMESTIC').reduce((s, r) => s + r.amt, 0));
+
+    if (d === 'TRD') {
+      secondaryItems.push({ label: `TRD Import`, val: domVal, color: TER_COLORS.DOMESTIC, sub: domesticTotal > 0 ? (domVal/domesticTotal*100).toFixed(1)+'%' : '0%', key: `TRD_IMP` });
+      secondaryItems.push({ label: `TRD Export`, val: expVal, color: TER_COLORS.EXPORT, sub: exportTotal > 0 ? (expVal/exportTotal*100).toFixed(1)+'%' : '0%', key: `TRD_EXP` });
+    } else {
+      secondaryItems.push({ label: `${d} Export`, val: expVal, color: TER_COLORS.EXPORT, sub: exportTotal > 0 ? (expVal/exportTotal*100).toFixed(1)+'%' : '0%', key: `${d}_EXP` });
+      secondaryItems.push({ label: `${d} Import`, val: domVal, color: TER_COLORS.DOMESTIC, sub: domesticTotal > 0 ? (domVal/domesticTotal*100).toFixed(1)+'%' : '0%', key: `${d}_IMP` });
+    }
+  });
+
+  document.getElementById('kpi-row').innerHTML = primaryItems.map((k, i) =>
+    `<div class="kpi" style="--delay: ${i * 0.05}s" data-kpi="${k.key}" title="${k.label} contribution">
+      <div class="percentage-badge">${grand > 0 ? (k.val / grand * 100).toFixed(1) : 0}%</div>
       <div class="label">${k.label}</div>
-      <div class="val" style="color:${k.color}">${fmt(k.val)}</div>
+      <div class="val" style="color:${k.color}">0</div>
       <div class="sub">${k.sub}</div>
     </div>`
   ).join('');
+
+  document.getElementById('kpi-row-secondary').innerHTML = secondaryItems.map((k, i) =>
+    `<div class="kpi" style="--delay: ${(i + primaryItems.length) * 0.05}s" data-kpi="${k.key}" title="${k.label} contribution">
+      <div class="percentage-badge">${grand > 0 ? (k.val / grand * 100).toFixed(1) : 0}%</div>
+      <div class="label">${k.label}</div>
+      <div class="val" style="color:${k.color}">0</div>
+      <div class="sub">${k.sub}</div>
+    </div>`
+  ).join('');
+
+  primaryItems.forEach(item => animateKPI(item.key, 0, item.val));
+  secondaryItems.forEach(item => animateKPI(item.key, 0, item.val));
 };
 const renderMonthly = (rows) => {
   const map = {};
@@ -1090,7 +1272,7 @@ const renderMonthly = (rows) => {
 
   mkChart('chart-monthly-stack', 'bar', {
     labels,
-    datasets: DEPTS.map((d,i) => ({
+    datasets: DEPTS.map((d, i) => ({
       label: d,
       data: currentMonthlyChartData[d.toLowerCase()],
       backgroundColor: Object.values(DEPT_COLORS)[i] + 'cc',
@@ -1109,7 +1291,7 @@ const renderMonthly = (rows) => {
     scales: { x: { ...scaleCfg().x, stacked: true }, y: { ...scaleCfg().y, stacked: true } }
   });
 
-  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0)));
+  const pieTotals = DEPTS.map(d => round2(rows.filter(r => r.unit === d).reduce((s, r) => s + r.amt, 0)));
   mkChart('chart-pie', 'doughnut', {
     labels: DEPTS,
     datasets: [{ data: pieTotals, backgroundColor: Object.values(DEPT_COLORS), borderColor: '#ffffff', borderWidth: 2, hoverOffset: 10 }]
@@ -1119,24 +1301,20 @@ const renderMonthly = (rows) => {
   });
 };
 
-/* Get Customer Data Based on Filters */
 const getFilteredCustomerData = () => {
   const fMonth = document.getElementById('fc-month').value;
   const fDept = document.getElementById('fc-dept').value;
   const fTer = document.getElementById('fc-territory').value;
-
   const filtered = allRows.filter(r =>
     (fMonth === 'all' || monthKey(r.date) === fMonth) &&
     (fDept === 'all' || r.unit === fDept) &&
     (fTer === 'all' || r.territory === fTer)
   );
-
   const customerMap = new Map();
   filtered.forEach(row => {
     if (!row.customer || row.customer === '') return;
     customerMap.set(row.customer, (customerMap.get(row.customer) || 0) + row.amt);
   });
-
   return Array.from(customerMap.entries())
     .map(([name, total]) => ({ name: name, total: round2(total) }))
     .filter(c => c.total > 0);
@@ -1274,48 +1452,78 @@ const renderCustomerOverview = () => {
   }
 };
 
+/* Helper for Download Animations */
+async function animateButtonAction(btn, action) {
+  const originalHTML = btn.innerHTML;
+  const originalWidth = btn.offsetWidth;
+  
+  btn.style.width = originalWidth + 'px';
+  btn.classList.add('loading');
+  
+  try {
+    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate processing
+    await action();
+    
+    btn.classList.remove('loading');
+    btn.classList.add('success-state');
+    btn.innerHTML = '<svg class="icon-drop" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+    
+    setTimeout(() => {
+      btn.classList.remove('success-state');
+      btn.innerHTML = originalHTML;
+      btn.style.width = '';
+    }, 2000);
+  } catch (e) {
+    btn.classList.remove('loading');
+    btn.innerHTML = originalHTML;
+    btn.style.width = '';
+  }
+}
 
 /* Export Top Customers ( ranking selection) */
-window.exportTopCustomers = () => {
+window.exportTopCustomers = (event) => {
   if (!currentTopCustomersData || currentTopCustomersData.length === 0) {
     showToast('No customer data to export', 'warning');
     return;
   }
-  
-  const fRanking = document.getElementById('fc-ranking').value;
-  const limit = fRanking === 'top10' ? 10 : 20;
-  
-  const exportData = currentTopCustomersData.map((c, idx) => ({
-    'Rank': idx + 1,
-    'Customer Name': c.name,
-    'Total Sales (₹)': c.total
-  }));
-  
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, `Top ${limit} Customers`);
-  XLSX.writeFile(wb, `Top_${limit}_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
-  showToast(`Top ${limit} customers exported successfully!`, 'success');
+
+  animateButtonAction(event.currentTarget, async () => {
+    const fRanking = document.getElementById('fc-ranking').value;
+    const limit = fRanking === 'top10' ? 10 : 20;
+    
+    const exportData = currentTopCustomersData.map((c, idx) => ({
+      'Rank': idx + 1,
+      'Customer Name': c.name,
+      'Total Sales (₹)': c.total
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Top ${limit} Customers`);
+    XLSX.writeFile(wb, `Top_${limit}_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast(`Top ${limit} customers exported!`, 'success');
+  });
 };
 
 /* Export Bottom 10 Customers */
-window.exportBottomCustomers = () => {
+window.exportBottomCustomers = (event) => {
   if (!currentBottom10Data || currentBottom10Data.length === 0) {
-    showToast('No Bottom 10 data to export', 'warning');
+    showToast('No bottom 10 customer data to export', 'warning');
     return;
   }
-  
-  const exportData = currentBottom10Data.map((c, idx) => ({
-    'Rank': idx + 1,
-    'Customer Name': c.name,
-    'Total Sales (₹)': c.total
-  }));
-  
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Bottom 10 Customers');
-  XLSX.writeFile(wb, `Bottom_10_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
-  showToast('Bottom 10 customers exported successfully!', 'success');
+
+  animateButtonAction(event.currentTarget, async () => {
+    const exportData = currentBottom10Data.map((c, idx) => ({
+      'Rank': idx + 1,
+      'Customer Name': c.name,
+      'Total Sales (₹)': c.total
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Bottom 10 Customers');
+    XLSX.writeFile(wb, `Bottom_10_Customers_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('Bottom 10 exported!', 'success');
+  });
 };
 
 /* Export Selected Customer Daily Sales */
@@ -1381,7 +1589,6 @@ window.exportSelectedCustomerDaily = () => {
   showToast(`${fCustomer} daily sales exported successfully!`, 'success');
 };
 
-/* Section Break - Day-wise Sales */
 const renderDaily = () => {
   const fMonth = document.getElementById('f-month').value;
   const fDept = document.getElementById('f-dept').value;
@@ -1463,7 +1670,6 @@ const renderDaily = () => {
   }
 };
 
-/*Customer Daily */
 const renderCustomerDaily = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
@@ -1689,11 +1895,23 @@ window.manualRefresh = () => {
     });
 };
 
+/* Update Tab Underline */
+const updateTabIndicator = () => {
+  const activeTab = document.querySelector('.tab.active');
+  const indicator = document.getElementById('tab-indicator');
+  if (activeTab && indicator) {
+    indicator.style.width = activeTab.offsetWidth + 'px';
+    indicator.style.left = activeTab.offsetLeft + 'px';
+  }
+};
+
 /* Tab Switching Logic */
 window.switchTab = (tabId) => {
-  const current = document.querySelector('.tab-view:not([style*="display: none"])');
+  const current = document.querySelector('.tab-view:not([style*="display:none"]):not([style*="display: none"])');
   const next = document.getElementById(`tab-${tabId}`);
   if (current === next) return;
+
+  updateTabIndicator();
 
   if (current) {
     current.classList.remove('anim-in');
@@ -1737,6 +1955,8 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
+window.addEventListener('resize', updateTabIndicator);
+
 /* Listeners for Daily tab */
 ['f-month', 'f-dept', 'f-territory'].forEach(id =>
   document.getElementById(id)?.addEventListener('change', () => {
@@ -1767,7 +1987,6 @@ document.querySelectorAll('.tab').forEach(btn => {
 
 document.getElementById('fc-customer')?.addEventListener('change', renderCustomerDaily);
 
-/* load data  */
 const loadData = () => {
   fetch('data.xlsx?' + Date.now())
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
@@ -1787,6 +2006,7 @@ const loadData = () => {
       renderMonthly(allRows);
       populateMonths(allRows);
       populateCustomerDropdown();
+      updateTabIndicator();
       renderTopCustomersHorizontal();
       renderBottom10Horizontal();
       renderCustomerOverview();
