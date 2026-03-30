@@ -219,6 +219,27 @@ header h1 span { color: var(--accent); }
   gap: 8px;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.btn-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--error);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid var(--bg2);
+  display: none;
+  animation: badgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+@keyframes badgePop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 /* Button Morphing & Loading */
 .btn.loading {
@@ -298,7 +319,6 @@ header h1 span { color: var(--accent); }
   box-shadow: var(--shadow-float);
   position: relative;
   overflow: hidden;
-  cursor: pointer;
   transition: all 0.5s var(--ease);
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--delay, 0s);
@@ -306,6 +326,7 @@ header h1 span { color: var(--accent); }
   display: flex;
   flex-direction: column;
   justify-content: center;
+  cursor: default;
 }
 
 .kpi::before {
@@ -360,29 +381,6 @@ header h1 span { color: var(--accent); }
   position: relative;
   z-index: 2;
 }
-.kpi:active { transform: scale(0.95); }
-
-.kpi.active-filter {
-  border-color: var(--accent);
-  background: var(--bg);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-.kpi.active-filter::after {
-  content: 'LIVE';
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 8px;
-  font-weight: 800;
-  color: var(--accent);
-  background: rgba(99, 102, 241, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
-  letter-spacing: 0.1em;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 .kpi .percentage-badge {
   position: absolute;
@@ -403,6 +401,39 @@ header h1 span { color: var(--accent); }
 .kpi:hover .percentage-badge {
   opacity: 1;
   transform: translateY(0);
+}
+.percentage-above-avg {
+  color: var(--success); /* Green for above average */
+}
+.percentage-below-avg {
+  color: var(--error); /* Red for below average */
+}
+.percentage-neutral {
+  color: var(--muted); /* Neutral color */
+}
+.growth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.growth-up { background: #ecfdf5; color: #059669; }
+.growth-down { background: #fef2f2; color: #dc2626; }
+
+.pie-icon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: conic-gradient(var(--pie-color) 0% calc(var(--p) * 1%), var(--border-hover) calc(var(--p) * 1%) 100%);
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 0.5px solid rgba(0,0,0,0.1);
 }
 
 .tabs {
@@ -865,6 +896,13 @@ header h1:hover { opacity: 0.8; }
     </div>
     <div id="refresh-info">
       <span>Last updated: <b id="last-updated">—</b></span>
+      <button class="btn" onclick="openHealthMode()" style="background: var(--info);">
+        <svg viewBox="0 0 24 24" width="14" height="14">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        Data Health
+        <span id="health-badge" class="btn-badge">0</span>
+      </button>
       <button class="btn" onclick="resetAllFilters()" style="background: var(--warning);">
         <svg viewBox="0 0 24 24" width="14" height="14">
           <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
@@ -882,7 +920,7 @@ header h1:hover { opacity: 0.8; }
 
   <!-- KPI Track -->
   <div class="kpi-row reveal" style="--order: 1" id="kpi-row"></div>
-  <div class="kpi-row reveal" style="--order: 2" id="kpi-row-secondary" style="padding-top: 0;"></div>
+  <div class="kpi-row reveal" style="--order: 2" id="kpi-row-secondary"></div>
 
   <!-- Tabs -->
   <div class="tabs reveal" style="--order: 3">
@@ -1021,6 +1059,18 @@ header h1:hover { opacity: 0.8; }
       <div id="focus-table-container"></div>
     </div>
   </div>
+
+  <!-- Data Health Overlay -->
+  <div id="health-overlay" style="display:none; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.98); z-index: 10001; flex-direction: column; padding: clamp(20px, 5vw, 40px); overflow-y: auto; backdrop-filter: blur(15px); animation: fadeIn 0.3s ease;">
+    <div class="focus-header">
+      <h2>📊 Data Health Report</h2>
+      <button class="btn" onclick="closeHealthMode()" style="background: var(--error);">Close Report</button>
+    </div>
+    <div class="focus-body">
+      <p style="margin-bottom: 20px; font-size: 14px; color: var(--muted);">The following rows were skipped during the import process due to errors or filters.</p>
+      <div id="health-table-container"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1031,7 +1081,7 @@ const TER_COLORS = { EXPORT: '#0ea5e9', DOMESTIC: '#f43f5e' };
 const GRID = '#f1f5f9';
 const AXIS_TEXT = '#94a3b8';
 
-/* Toast System with Close Button */
+/* Toast System */
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -1076,7 +1126,6 @@ function showToast(message, type = 'success') {
   }
 }
 
-/* Currency Formatting Utility */
 const formatCurrency = (v) => {
   if (v === undefined || v === null) return '₹0.00';
   v = Math.round((v + Number.EPSILON) * 100) / 100;
@@ -1096,13 +1145,11 @@ const tooltipCfg = {
   callbacks: { label: (ctx) => ' ' + formatCurrency(ctx.raw ?? ctx.parsed.y ?? ctx.parsed.x ?? ctx.parsed) }
 };
 
-/* Axes */
 const axisCfg = {
   color: AXIS_TEXT,
   font: { family: 'Inter', size: window.innerWidth < 600 ? 9 : 11, weight: '500' }
 };
 
-/* Scales for horizontal charts */
 const horizontalScaleCfg = () => ({
   x: {
     grid: { color: GRID, lineWidth: 0.5 },
@@ -1116,7 +1163,6 @@ const horizontalScaleCfg = () => ({
   }
 });
 
-/* Scales for vertical charts */
 const scaleCfg = (labelCount = 0) => ({
   x: {
     grid: { color: GRID, lineWidth: 0.5 },
@@ -1137,10 +1183,8 @@ const scaleCfg = (labelCount = 0) => ({
   }
 });
 
-/* Chart Store */
 const charts = {};
 
-/* Chart Init */
 const mkChart = (id, type, data, opts) => {
   if (charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id);
@@ -1150,7 +1194,6 @@ const mkChart = (id, type, data, opts) => {
       ? { mode: 'nearest', intersect: true } 
       : { mode: 'nearest', intersect: false, axis: isHorizontal ? 'y' : 'x' };
 
-    // Force animation on every update
     const animationOpts = {
       animation: {
         duration: 800,
@@ -1172,10 +1215,19 @@ const mkChart = (id, type, data, opts) => {
   }
 };
 
-/* Math Util */
 const round2 = (v) => Math.round((v + Number.EPSILON) * 100) / 100;
 
-/* KPI Countup Animation */
+// New function to determine percentage color class
+const getPercentageColorClass = (percentage, benchmark) => {
+  if (benchmark === null) return 'percentage-neutral'; // No benchmark, neutral color
+  if (percentage > benchmark) {
+    return 'percentage-above-avg';
+  } else if (percentage < benchmark) {
+    return 'percentage-below-avg';
+  }
+  return 'percentage-neutral'; // Exactly average or no significant difference
+};
+
 function animateKPI(id, start, end) {
   const el = document.querySelector(`[data-kpi="${id}"] .val`);
   if (!el) return;
@@ -1185,7 +1237,7 @@ function animateKPI(id, start, end) {
   const step = (timestamp) => {
     if (!startTimestamp) startTimestamp = timestamp;
     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-    const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
     const current = easedProgress * (end - start) + start;
     el.innerHTML = formatCurrency(current);
     if (progress < 1) window.requestAnimationFrame(step);
@@ -1193,7 +1245,6 @@ function animateKPI(id, start, end) {
   window.requestAnimationFrame(step);
 }
 
-/* Date Parser */
 const parseDate = (v) => {
   if (v instanceof Date) return isNaN(v) ? null : new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()));
   if (typeof v === 'number') {
@@ -1215,13 +1266,11 @@ const parseDate = (v) => {
   return null;
 };
 
-/* Helper: Get standardized date string */
 const getDateKey = (date) => {
   if (!date) return '';
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
 };
 
-/* Normalize Zone */
 const normTerritory = (v) => {
   const s = String(v).toUpperCase().trim();
   if (s === 'EXPORT' || s === 'EXP') return 'EXPORT';
@@ -1229,12 +1278,11 @@ const normTerritory = (v) => {
   return s;
 };
 
-/* Month Key */
 const monthKey = (d) => MONTHS[d.getMonth()] + ' ' + d.getFullYear();
 
-/* Global State */
 let allRows = [];
 let totalExcelRows = 0;
+let errorRows = [];
 let currentMonthlyChartData = null;
 let currentDailyChartData = null;
 let currentCustomerOverviewData = null;
@@ -1247,8 +1295,10 @@ const parseExcel = (buf) => {
   const ws = wb.Sheets[wb.SheetNames[0]];
   const json = XLSX.utils.sheet_to_json(ws, { defval: '', blankrows: false });
   totalExcelRows = json.length;
+  errorRows = [];
 
-  return json.map(row => {
+  const validRows = [];
+  json.forEach((row, idx) => {
     let amount = 0;
     const saleAmt = row['Sale Amt.'];
     if (saleAmt !== undefined && saleAmt !== '') {
@@ -1258,44 +1308,50 @@ const parseExcel = (buf) => {
       amount = round2(parseFloat(row['Total Amt']) || 0);
     }
 
-    let customer = '';
-    if (row['Benf. Name'] !== undefined && row['Benf. Name'] !== '') {
-      customer = String(row['Benf. Name']);
-    } else if (row['Benf Name'] !== undefined) {
-      customer = String(row['Benf Name']);
-    } else if (row['Customer'] !== undefined) {
-      customer = String(row['Customer']);
+    const pDate = parseDate(row['Inv. Date']);
+    const unit = String(row['Unit'] || '').toUpperCase().trim();
+    const territory = normTerritory(row['Territory'] || '');
+    
+    const isGeneral = territory === 'GENERAL';
+    const hasAmt = amount > 0;
+    const hasUnit = unit !== '';
+    const hasDate = pDate !== null;
+
+    if (hasDate && hasUnit && hasAmt && !isGeneral) {
+      let customer = '';
+      if (row['Benf. Name'] !== undefined && row['Benf. Name'] !== '') {
+        customer = String(row['Benf. Name']);
+      } else if (row['Benf Name'] !== undefined) {
+        customer = String(row['Benf Name']);
+      } else if (row['Customer'] !== undefined) {
+        customer = String(row['Customer']);
+      }
+
+      validRows.push({
+        date: pDate,
+        unit: unit,
+        territory: territory,
+        customer: customer,
+        amt: amount,
+      });
+    } else {
+      let reasons = [];
+      if (!hasDate) reasons.push("Invalid/Missing Date");
+      if (!hasUnit) reasons.push("Missing Unit");
+      if (!hasAmt) reasons.push("Zero/Invalid Amount");
+      if (isGeneral) reasons.push("General Territory (Filtered)");
+
+      errorRows.push({
+        row: idx + 2,
+        rawDate: row['Inv. Date'] || 'N/A',
+        rawAmt: row['Sale Amt.'] || row['Total Amt'] || '0',
+        rawUnit: row['Unit'] || 'N/A',
+        customer: row['Benf. Name'] || row['Benf Name'] || row['Customer'] || 'N/A',
+        reason: reasons.join(", ")
+      });
     }
-
-    return {
-      date: parseDate(row['Inv. Date']),
-      unit: String(row['Unit'] || '').toUpperCase().trim(),
-      territory: normTerritory(row['Territory'] || ''),
-      customer: customer,
-      amt: amount,
-    };
-  }).filter(r => r.date && r.unit && r.amt > 0 && r.territory !== 'GENERAL');
-};
-
-/* Interactive Drilldown Logic */
-window.handleDrilldown = (unit, territory) => {
-  const u = unit === 'all' ? 'all' : unit;
-  const t = territory === 'all' ? 'all' : territory;
-
-  // Update all filter selects
-  ['f-dept', 'fc-dept', 'fc-dept-daily'].forEach(id => document.getElementById(id).value = u);
-  ['f-territory', 'fc-territory', 'fc-territory-daily'].forEach(id => document.getElementById(id).value = t);
-
-  showToast(`Drill-down active: ${u.toUpperCase()} | ${t.toUpperCase()}`, 'info');
-  
-  // Re-render views
-  renderDaily();
-  renderTopCustomersHorizontal();
-  renderBottom10Horizontal();
-  renderCustomerOverview();
-  populateCustomerDropdown();
-  renderCustomerDaily();
-  renderKPI(allRows); // Re-render to show active state
+  });
+  return validRows;
 };
 
 window.resetAllFilters = () => {
@@ -1321,48 +1377,79 @@ const renderKPI = (rows) => {
   const grand = round2(rows.reduce((s,r) => s+r.amt, 0));
   const exportTotal = round2(rows.filter(r => r.territory === 'EXPORT').reduce((s,r) => s+r.amt, 0));
   const domesticTotal = round2(rows.filter(r => r.territory === 'DOMESTIC').reduce((s,r) => s+r.amt, 0));
-  
-  // Row 1: Grand Total + 4 Depts + Export + Import
+  let momHtml = '';
+  const fMonth = document.getElementById('f-month')?.value || 'all';
+  if (fMonth !== 'all') {
+    const [m, y] = fMonth.split(' ');
+    const prevDate = new Date(+y, MONTHS.indexOf(m) - 1, 1);
+    const prevKey = MONTHS[prevDate.getMonth()] + ' ' + prevDate.getFullYear();
+    const fDept = document.getElementById('f-dept')?.value || 'all';
+    const fTer = document.getElementById('f-territory')?.value || 'all';
+    
+    const prevTotal = allRows.filter(r => 
+      monthKey(r.date) === prevKey &&
+      (fDept === 'all' || r.unit === fDept) &&
+      (fTer === 'all' || r.territory === fTer)
+    ).reduce((s, r) => s + r.amt, 0);
+
+    if (prevTotal > 0) {
+      const diff = ((grand - prevTotal) / prevTotal) * 100;
+      const isUp = diff >= 0;
+      momHtml = `<span class="growth-badge ${isUp ? 'growth-up' : 'growth-down'}">
+        ${isUp ? '↑' : '↓'} ${Math.abs(diff).toFixed(1)}%
+      </span>`;
+    }
+  }
+
+  const deptBenchmark = 100 / DEPTS.length; // For 4 departments, this is 25%
+
+  // First Row: Grand Total + 4 Depts + Total Export + Total Domestic
   const primaryItems = [
-    { label: 'Grand Total Sales', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' valid rows', key: 'grand' },
+    { label: 'Grand Total Sales', val: grand, color: '#1e40af', sub: rows.length.toLocaleString() + ' rows' + momHtml, key: 'grand', pct: null, pctBenchmark: null },
     ...DEPTS.map(d => {
       const v = round2(rows.filter(r => r.unit === d).reduce((s,r) => s+r.amt, 0));
-      return { label: d, val: v, color: DEPT_COLORS[d], sub: grand > 0 ? (v/grand*100).toFixed(1)+'%' : '—', key: d };
+      const pct = grand > 0 ? (v/grand*100) : 0;
+      return { label: d, val: v, color: DEPT_COLORS[d], sub: pct.toFixed(1)+'%', key: d, pct: pct, pctBenchmark: deptBenchmark };
     }),
-    { label: 'Total Export', val: exportTotal, color: TER_COLORS.EXPORT, sub: 'All Units', key: 'EXPORT' },
-    { label: 'Total Import', val: domesticTotal, color: TER_COLORS.DOMESTIC, sub: 'All Units', key: 'DOMESTIC' }
+    { label: 'Total Export', val: exportTotal, color: TER_COLORS.EXPORT, sub: grand > 0 ? (exportTotal/grand*100).toFixed(1)+'%' : '0%', key: 'EXPORT', pct: grand > 0 ? (exportTotal/grand*100) : 0, pctBenchmark: null },
+    { label: 'Total Import', val: domesticTotal, color: TER_COLORS.DOMESTIC, sub: grand > 0 ? (domesticTotal/grand*100).toFixed(1)+'%' : '0%', key: 'DOMESTIC', pct: grand > 0 ? (domesticTotal/grand*100) : 0, pctBenchmark: null }
   ];
 
-  // Get current filter values to show active state
-  const currentUnit = document.getElementById('f-dept').value;
-  const currentTer = document.getElementById('f-territory').value;
-
-  const isItemActive = (u, t) => {
-    return currentUnit === u && currentTer === t;
-  };
-
-  const secondaryItems = [];
-
-  DEPTS.forEach(d => {
-    const expVal = round2(rows.filter(r => r.unit === d && r.territory === 'EXPORT').reduce((s, r) => s + r.amt, 0));
-    const domVal = round2(rows.filter(r => r.unit === d && r.territory === 'DOMESTIC').reduce((s, r) => s + r.amt, 0));
-
-    if (d === 'TRD') {
-      secondaryItems.push({ label: `TRD Import`, val: domVal, color: TER_COLORS.DOMESTIC, sub: domesticTotal > 0 ? (domVal/domesticTotal*100).toFixed(1)+'%' : '0%', key: `TRD_IMP` });
-      secondaryItems.push({ label: `TRD Export`, val: expVal, color: TER_COLORS.EXPORT, sub: exportTotal > 0 ? (expVal/exportTotal*100).toFixed(1)+'%' : '0%', key: `TRD_EXP` });
-    } else {
-      secondaryItems.push({ label: `${d} Export`, val: expVal, color: TER_COLORS.EXPORT, sub: exportTotal > 0 ? (expVal/exportTotal*100).toFixed(1)+'%' : '0%', key: `${d}_EXP` });
-      secondaryItems.push({ label: `${d} Import`, val: domVal, color: TER_COLORS.DOMESTIC, sub: domesticTotal > 0 ? (domVal/domesticTotal*100).toFixed(1)+'%' : '0%', key: `${d}_IMP` });
-    }
+  // Second Row: Ordered as requested - IMD Export, IMD Import, DCD Export, DCD Import, TRD Export, TRD Import, MED Export, MED Import
+  const territorySplitBenchmark = 50; // Comparing Export vs Import within a single department
+  const secondaryItems = [
+    { u: 'IMD', t: 'EXPORT', lbl: 'IMD Export', k: 'IMD_EXP' },
+    { u: 'IMD', t: 'DOMESTIC', lbl: 'IMD Import', k: 'IMD_IMP' },
+    { u: 'DCD', t: 'EXPORT', lbl: 'DCD Export', k: 'DCD_EXP' },
+    { u: 'DCD', t: 'DOMESTIC', lbl: 'DCD Import', k: 'DCD_IMP' },
+    { u: 'TRD', t: 'EXPORT', lbl: 'TRD Export', k: 'TRD_EXP' },
+    { u: 'TRD', t: 'DOMESTIC', lbl: 'TRD Import', k: 'TRD_IMP' },
+    { u: 'MED', t: 'EXPORT', lbl: 'MED Export', k: 'MED_EXP' },
+    { u: 'MED', t: 'DOMESTIC', lbl: 'MED Import', k: 'MED_IMP' }
+  ].map(item => {
+    const val = round2(rows.filter(r => r.unit === item.u && r.territory === item.t).reduce((s, r) => s + r.amt, 0));
+    const deptTotal = rows.filter(r => r.unit === item.u).reduce((s, r) => s + r.amt, 0);
+    const pct = deptTotal > 0 ? (val / deptTotal * 100) : 0;
+    return {
+      label: item.lbl,
+      val: val,
+      color: TER_COLORS[item.t],
+      sub: `${pct.toFixed(1)}% of ${item.u} Total`,
+      key: item.k,
+      pct: pct,
+      pctBenchmark: territorySplitBenchmark
+    };
   });
 
   document.getElementById('kpi-row').innerHTML = primaryItems.map((k, i) => {
-    const unitVal = k.key === 'grand' ? 'all' : (TER_COLORS[k.key] ? 'all' : k.key);
-    const terVal = TER_COLORS[k.key] ? k.key : 'all';
-    const activeClass = isItemActive(unitVal, terVal) ? 'active-filter' : '';
-    
-    return `<div class="kpi ${activeClass}" onclick="handleDrilldown('${unitVal}', '${terVal}')" style="--delay: ${i * 0.05}s" data-kpi="${k.key}" title="Click to filter by ${k.label}">
-      <div class="percentage-badge">${grand > 0 ? (k.val / grand * 100).toFixed(1) : 0}%</div>
+    let percentageBadge = '';
+    if (k.pct !== null) {
+      const pctValue = k.pct.toFixed(1);
+      const colorClass = getPercentageColorClass(k.pct, k.pctBenchmark);
+      percentageBadge = `<div class="percentage-badge ${colorClass}">${pctValue}%</div>`;
+    }
+    return `<div class="kpi" style="--delay: ${i * 0.05}s" data-kpi="${k.key}" title="${k.label}">
+      ${percentageBadge}
       <div class="label">${k.label}</div>
       <div class="val" style="color:${k.color}">0</div>
       <div class="sub">${k.sub}</div>
@@ -1370,21 +1457,27 @@ const renderKPI = (rows) => {
   }).join('');
 
   document.getElementById('kpi-row-secondary').innerHTML = secondaryItems.map((k, i) => {
-    const unitVal = k.key.split('_')[0];
-    const terVal = k.key.endsWith('_EXP') ? 'EXPORT' : 'DOMESTIC';
-    const activeClass = isItemActive(unitVal, terVal) ? 'active-filter' : '';
+    let percentageBadge = '';
+    if (k.pct !== null) {
+      const pctValue = k.pct.toFixed(1);
+      const colorClass = getPercentageColorClass(k.pct, k.pctBenchmark);
+      percentageBadge = `<div class="percentage-badge ${colorClass}">${pctValue}%</div>`;
+    }
 
-    return `<div class="kpi ${activeClass}" onclick="handleDrilldown('${unitVal}', '${terVal}')" style="--delay: ${(i + primaryItems.length) * 0.05}s" data-kpi="${k.key}" title="Click to filter by ${k.label}">
-      <div class="percentage-badge">${grand > 0 ? (k.val / grand * 100).toFixed(1) : 0}%</div>
+    const pieIcon = `<div class="pie-icon" style="--p: ${k.pct}; --pie-color: ${k.color}"></div>`;
+
+    return `<div class="kpi" style="--delay: ${(i + primaryItems.length) * 0.05}s" data-kpi="${k.key}" title="${k.label}">
+      ${percentageBadge}
       <div class="label">${k.label}</div>
       <div class="val" style="color:${k.color}">0</div>
-      <div class="sub">${k.sub}</div>
+      <div class="sub">${pieIcon}${k.sub}</div>
     </div>`;
   }).join('');
 
   primaryItems.forEach(item => animateKPI(item.key, 0, item.val));
   secondaryItems.forEach(item => animateKPI(item.key, 0, item.val));
 };
+
 const renderMonthly = (rows) => {
   const map = {};
   rows.forEach(({ date, unit, amt }) => {
@@ -1473,7 +1566,6 @@ const getFilteredCustomerData = () => {
     .filter(c => c.total > 0);
 };
 
-/* Horizontal Top Customers Chart*/
 const renderTopCustomersHorizontal = () => {
   const fRanking = document.getElementById('fc-ranking').value;
   const limit = fRanking === 'top10' ? 10 : 20;
@@ -1517,7 +1609,6 @@ const renderTopCustomersHorizontal = () => {
   });
 };
 
-/* Horizontal Bottom 10 Chart */
 const renderBottom10Horizontal = () => {
   let customers = getFilteredCustomerData();
   customers = customers.sort((a, b) => a.total - b.total).slice(0, 10);
@@ -1557,7 +1648,6 @@ const renderBottom10Horizontal = () => {
   });
 };
 
-/* Original Vertical Bar Chart (respects ranking selection) */
 const renderCustomerOverview = () => {
   const fRanking = document.getElementById('fc-ranking').value;
   const limit = fRanking === 'top10' ? 10 : 20;
@@ -1605,7 +1695,6 @@ const renderCustomerOverview = () => {
   }
 };
 
-/* Helper for Download Animations */
 async function animateButtonAction(btn, action) {
   const originalHTML = btn.innerHTML;
   const originalWidth = btn.offsetWidth;
@@ -1614,7 +1703,7 @@ async function animateButtonAction(btn, action) {
   btn.classList.add('loading');
   
   try {
-    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate processing
+    await new Promise(resolve => setTimeout(resolve, 800)); 
     await action();
     
     btn.classList.remove('loading');
@@ -1633,7 +1722,6 @@ async function animateButtonAction(btn, action) {
   }
 }
 
-/* Export Top Customers ( ranking selection) */
 window.exportTopCustomers = (event) => {
   if (!currentTopCustomersData || currentTopCustomersData.length === 0) {
     showToast('No customer data to export', 'warning');
@@ -1658,7 +1746,6 @@ window.exportTopCustomers = (event) => {
   });
 };
 
-/* Export Bottom 10 Customers */
 window.exportBottomCustomers = (event) => {
   if (!currentBottom10Data || currentBottom10Data.length === 0) {
     showToast('No bottom 10 customer data to export', 'warning');
@@ -1679,7 +1766,6 @@ window.exportBottomCustomers = (event) => {
   });
 };
 
-/* Export Selected Customer Daily Sales */
 window.exportSelectedCustomerDaily = () => {
   if (!currentCustomerDailyData || !currentCustomerDailyData.labels.length) {
     showToast('No customer data available to export', 'warning');
@@ -1705,7 +1791,6 @@ const renderDaily = () => {
   const fTer = document.getElementById('f-territory').value;
   if (!fMonth) return;
 
-  // Get color based on selected unit
   const barColor = DEPT_COLORS[fDept] ? DEPT_COLORS[fDept] + 'cc' : '#3b82f6cc';
   const borderColor = DEPT_COLORS[fDept] || '#3b82f6';
 
@@ -1857,6 +1942,7 @@ const renderCustomerDaily = () => {
 
   showToast(`${fCustomer}: ${activeDates.length} days with sales, Total ${formatCurrency(totalSales)}`, 'success');
 };
+
 const populateCustomerDropdown = () => {
   const fMonth = document.getElementById('fc-month-daily').value;
   const fDept = document.getElementById('fc-dept-daily').value;
@@ -1881,6 +1967,7 @@ const populateCustomerDropdown = () => {
     sel.value = oldValue;
   }
 };
+
 const populateMonths = (rows) => {
   const seen = new Set();
   rows.forEach(r => seen.add(monthKey(r.date)));
@@ -1898,6 +1985,7 @@ const populateMonths = (rows) => {
   document.getElementById('fc-month').value = 'all';
   document.getElementById('fc-month-daily').value = 'all';
 };
+
 window.exportToExcel = (type) => {
   const wb = XLSX.utils.book_new();
 
@@ -1936,6 +2024,7 @@ window.exportToExcel = (type) => {
 
   XLSX.writeFile(wb, `Sales_Dashboard_${type}_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
 window.manualRefresh = () => {
   const loader = document.getElementById('loader');
   loader.style.display = 'flex';
@@ -1945,6 +2034,8 @@ window.manualRefresh = () => {
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
+      updateHealthBadge();
+
       if (!allRows.length) throw new Error('No valid rows found');
 
       document.getElementById('meta').textContent = allRows.length.toLocaleString() + ' valid rows · Total Excel rows: ' + totalExcelRows;
@@ -1977,7 +2068,6 @@ window.manualRefresh = () => {
     });
 };
 
-/* Update Tab Underline */
 const updateTabIndicator = () => {
   const activeTab = document.querySelector('.tab.active');
   const indicator = document.getElementById('tab-indicator');
@@ -1987,7 +2077,6 @@ const updateTabIndicator = () => {
   }
 };
 
-/* Tab Switching Logic */
 window.switchTab = (tabId) => {
   const current = document.querySelector('.tab-view:not([style*="display:none"]):not([style*="display: none"])');
   const next = document.getElementById(`tab-${tabId}`);
@@ -2039,7 +2128,6 @@ document.querySelectorAll('.tab').forEach(btn => {
 
 window.addEventListener('resize', updateTabIndicator);
 
-/* Listeners for Daily tab */
 ['f-month', 'f-dept', 'f-territory'].forEach(id =>
   document.getElementById(id)?.addEventListener('change', () => {
     renderDaily();
@@ -2050,7 +2138,6 @@ window.addEventListener('resize', updateTabIndicator);
   })
 );
 
-/* Listeners for Customer tab - update all charts */
 ['fc-ranking', 'fc-month', 'fc-dept', 'fc-territory'].forEach(id =>
   document.getElementById(id)?.addEventListener('change', () => {
     renderTopCustomersHorizontal();
@@ -2059,7 +2146,6 @@ window.addEventListener('resize', updateTabIndicator);
   })
 );
 
-/* Listeners for Customer Daily */
 ['fc-month-daily', 'fc-dept-daily', 'fc-territory-daily'].forEach(id =>
   document.getElementById(id)?.addEventListener('change', () => {
     populateCustomerDropdown();
@@ -2068,10 +2154,8 @@ window.addEventListener('resize', updateTabIndicator);
 );
 
 document.getElementById('fc-customer')?.addEventListener('change', renderCustomerDaily);
-
 document.getElementById('fc-customer-search')?.addEventListener('input', populateCustomerDropdown);
 
-/* Focus Mode Logic */
 let focusChartInstance = null;
 window.openFocusMode = (chartId, title) => {
   const source = charts[chartId];
@@ -2086,7 +2170,6 @@ window.openFocusMode = (chartId, title) => {
   const labels = source.data.labels;
   const datasets = source.data.datasets;
 
-  // Determine dynamic category header based on chart type/ID
   let catHeader = 'Item';
   if (chartId.includes('monthly')) catHeader = 'Month';
   else if (chartId.includes('daily')) catHeader = 'Date';
@@ -2103,7 +2186,6 @@ window.openFocusMode = (chartId, title) => {
     tableHtml += `</tr>`;
   });
 
-  // Add Total Summary Row
   tableHtml += `</tbody><tfoot><tr style="background: var(--bg3); font-weight: 700;"><td>Total</td>`;
   datasets.forEach(ds => {
     const sum = ds.data.reduce((acc, val) => acc + (val || 0), 0);
@@ -2163,12 +2245,64 @@ window.copyFocusTable = () => {
     showToast('Copy failed while preparing table data.', 'error');
   }
 };
+window.updateHealthBadge = () => {
+  const badge = document.getElementById('health-badge');
+  if (!badge) return;
+  const count = errorRows.length;
+  if (count > 0) {
+    badge.textContent = count > 99 ? '99+' : count;
+    badge.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+  }
+};
+
+window.openHealthMode = () => {
+  const overlay = document.getElementById('health-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  const tableCont = document.getElementById('health-table-container');
+  if (errorRows.length === 0) {
+    tableCont.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--success); font-weight: 600;">✅ Perfect! No data health issues found.</div>';
+    return;
+  }
+
+  let tableHtml = `<table class="focus-table"><thead><tr>
+    <th>Excel Row</th>
+    <th>Date</th>
+    <th>Amount</th>
+    <th>Unit</th>
+    <th>Customer</th>
+    <th>Reason</th>
+  </tr></thead><tbody>`;
+
+  errorRows.forEach(err => {
+    tableHtml += `<tr>
+      <td>${err.row}</td>
+      <td>${err.rawDate}</td>
+      <td>${err.rawAmt}</td>
+      <td>${err.rawUnit}</td>
+      <td>${err.customer}</td>
+      <td><span style="color: var(--error); font-weight: 500;">${err.reason}</span></td>
+    </tr>`;
+  });
+  tableHtml += `</tbody></table>`;
+  tableCont.innerHTML = tableHtml;
+};
+
+window.closeHealthMode = () => {
+  document.getElementById('health-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+};
 
 const loadData = () => {
   fetch('data.xlsx?' + Date.now())
     .then(r => { if (!r.ok) throw new Error('data.xlsx not found'); return r.arrayBuffer(); })
     .then(buf => {
       allRows = parseExcel(buf);
+      updateHealthBadge();
+
       if (!allRows.length) throw new Error('No valid rows found');
 
       const loader = document.getElementById('loader');
@@ -2219,7 +2353,6 @@ document.querySelectorAll('.btn').forEach(btn => {
     setTimeout(() => btn.classList.remove('rotate-icon'), 600);
   });
 });
-
 </script>
 </body>
 </html>
